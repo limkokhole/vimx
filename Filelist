@@ -137,7 +137,6 @@ SRC_ALL =	\
 SRC_UNIX =	\
 		Makefile \
 		Filelist \
-		README_src.txt \
 		configure \
 		pixmaps/*.xpm \
 		pixmaps/gen-inline-pixbufs.sh \
@@ -249,7 +248,6 @@ SRC_DOS =	\
 		src/GvimExt/gvimext_ming.rc \
 		src/GvimExt/resource.h \
 		src/GvimExt/uninst.bat \
-		README_srcdos.txt \
 		src/INSTALLpc.txt \
 		src/Make_bc3.mak \
 		src/Make_bc5.mak \
@@ -366,8 +364,6 @@ SRC_AMI_DOS =	\
 
 # source files for Amiga (also in the extra archive)
 SRC_AMI =	\
-		README_amisrc.txt \
-		README_amisrc.txt.info \
 		src.info \
 		src/INSTALLami.txt \
 		src/Make_dice.mak \
@@ -436,7 +432,6 @@ SRC_EXTRA =	\
 		$(SRC_OS2) \
 		$(SRC_QNX) \
 		$(SRC_VMS) \
-		README_os390.txt \
 		src/Make_mint.mak \
 		src/if_sniff.c \
 		src/infplist.xml \
@@ -541,7 +536,6 @@ RT_SCRIPTS =	\
 
 # Unix runtime
 RT_UNIX =	\
-		README_unix.txt \
 		runtime/hi16-action-make.png \
 		runtime/hi22-action-make.png \
 		runtime/vim16x16.png \
@@ -569,7 +563,6 @@ RT_AMI_DOS =	\
 
 # DOS runtime (also in the extra archive)
 RT_DOS =	\
-		README_dos.txt \
 		runtime/rgb.txt \
 		vimtutor.bat \
 
@@ -582,9 +575,6 @@ RT_DOS_BIN =	\
 
 # Amiga runtime (also in the extra archive)
 RT_AMI =	\
-		README.txt.info \
-		README_ami.txt \
-		README_ami.txt.info \
 		libs/arp.library \
 		runtime/doc.info \
 		runtime/doc/*.info \
@@ -607,7 +597,6 @@ RT_EXTRA =	\
 		$(RT_AMI_DOS) \
 		$(RT_DOS) \
 		$(RT_DOS_BIN) \
-		README_mac.txt \
 
 # included in all Amiga archives
 ROOT_AMI =	\
@@ -622,31 +611,24 @@ ROOT_EXTRA =	\
 
 # files for Amiga small binary (also in extra archive)
 BIN_AMI =	\
-		README_amibin.txt \
-		README_amibin.txt.info \
 		Vim.info \
 		Xxd.info \
 
 # files for DOS binary (also in extra archive)
 BIN_DOS =	\
-		README_bindos.txt \
 		uninstal.txt \
 
 # files for Win32 OLE binary (also in extra archive)
 BIN_OLE =	\
-		README_ole.txt \
 
 # files for Win32s binary (also in extra archive)
 BIN_W32S =	\
-		README_w32s.txt \
 
 # files for VMS binary (also in extra archive)
 BIN_VMS =	\
-		README_vms.txt \
 
 # files for OS/2 binary (also in extra archive)
 BIN_OS2 =	\
-		README_os2.txt \
 
 # binary files for extra archive
 BIN_EXTRA =	\
@@ -663,7 +645,6 @@ EXTRA =		\
 		$(ROOT_EXTRA) \
 		$(RT_EXTRA) \
 		$(SRC_EXTRA) \
-		README_extra.txt \
 		src/VisVim/VisVim.dll \
 		farsi/README.txt \
 		farsi/fonts/*/far-* \

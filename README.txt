@@ -78,15 +78,10 @@ obtained a source distribution, all the stuff for compiling Vim is in the
 
 INSTALLATION
 
-See one of these files for system-specific instructions:
-README_ami.txt		Amiga
-README_unix.txt		Unix
-README_dos.txt		MS-DOS and MS-Windows
-README_os2.txt		OS/2
-README_mac.txt		Macintosh
-README_vms.txt		VMS
+When you use the source distribution, "make install" is used to install Vim.
+See the "INSTALL" file in the "src" directory.
 
-There are more README_*.txt files, depending on the distribution you used.
+If you use a compiled package, follow the instructions for the package.
 
 
 INFORMATION
