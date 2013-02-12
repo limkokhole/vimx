@@ -13,8 +13,8 @@ For details, see the `INSTALL` file in the `src` directory.
 
 ## Features
 
-* Removed unnecessary readme files.
-* Removed windows support.
+* Removed unnecessary README files.
+* Removed Windows, Amiga and OS/2 support.
 
 ## License
 
