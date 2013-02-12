@@ -233,150 +233,6 @@ SRC_DOS_UNIX =	\
 		src/proto/if_tcl.pro \
 		src/typemap \
 
-# source files for DOS (also in the extra archive)
-SRC_DOS =	\
-		src/GvimExt/*.mak \
-		src/GvimExt/GvimExt.reg \
-		src/GvimExt/Makefile \
-		src/GvimExt/README.txt \
-		src/GvimExt/gvimext.cpp \
-		src/GvimExt/gvimext.def \
-		src/GvimExt/gvimext.h \
-		src/GvimExt/gvimext.inf \
-		src/GvimExt/gvimext.rc \
-		src/GvimExt/gvimext_ming.def \
-		src/GvimExt/gvimext_ming.rc \
-		src/GvimExt/resource.h \
-		src/GvimExt/uninst.bat \
-		src/INSTALLpc.txt \
-		src/Make_bc3.mak \
-		src/Make_bc5.mak \
-		src/Make_cyg.mak \
-		src/Make_djg.mak \
-		src/Make_ivc.mak \
-		src/Make_dvc.mak \
-		src/Make_ming.mak \
-		src/Make_mvc.mak \
-		src/Make_w16.mak \
-		src/bigvim.bat \
-		src/bigvim64.bat \
-		src/msvcsetup.bat \
-		src/msvc2008.bat \
-		src/msvc2010.bat \
-		src/dimm.idl \
-		src/dlldata.c \
-		src/dosinst.c \
-		src/dosinst.h \
-		src/glbl_ime.cpp \
-		src/glbl_ime.h \
-		src/gui_w16.c \
-		src/gui_w32.c \
-		src/gui_w48.c \
-		src/guiw16rc.h \
-		src/gui_w32_rc.h \
-		src/if_ole.cpp \
-		src/if_ole.h \
-		src/if_ole.idl \
-		src/iid_ole.c \
-		src/os_dos.h \
-		src/os_msdos.c \
-		src/os_msdos.h \
-		src/os_w32dll.c \
-		src/os_w32exe.c \
-		src/os_win16.c \
-		src/os_win32.c \
-		src/os_mswin.c \
-		src/os_win16.h \
-		src/os_win32.h \
-		src/proto/gui_w16.pro \
-		src/proto/gui_w32.pro \
-		src/proto/if_ole.pro \
-		src/proto/os_msdos.pro \
-		src/proto/os_win16.pro \
-		src/proto/os_win32.pro \
-		src/proto/os_mswin.pro \
-		src/testdir/Make_dos.mak \
-		src/testdir/Make_ming.mak \
-		src/testdir/dos.vim \
-		src/uninstal.c \
-		src/vim.def \
-		src/vim.rc \
-		src/vimio.h \
-		src/gvim.exe.mnf \
-		src/vim16.def \
-		src/vim16.rc \
-		src/vimrun.c \
-		src/vimtbar.h \
-		src/xpm_w32.c \
-		src/xpm_w32.h \
-		src/xxd/Make_bc3.mak \
-		src/xxd/Make_bc5.mak \
-		src/xxd/Make_cyg.mak \
-		src/xxd/Make_djg.mak \
-		src/xxd/Make_ming.mak \
-		src/xxd/Make_mvc.mak \
-		nsis/gvim.nsi \
-		nsis/README.txt \
-		uninstal.txt \
-		src/VisVim/Commands.cpp \
-		src/VisVim/Commands.h \
-		src/VisVim/DSAddIn.cpp \
-		src/VisVim/DSAddIn.h \
-		src/VisVim/OleAut.cpp \
-		src/VisVim/OleAut.h \
-		src/VisVim/README_VisVim.txt \
-		src/VisVim/Reg.cpp \
-		src/VisVim/Register.bat \
-		src/VisVim/Resource.h \
-		src/VisVim/StdAfx.cpp \
-		src/VisVim/StdAfx.h \
-		src/VisVim/UnRegist.bat \
-		src/VisVim/VisVim.cpp \
-		src/VisVim/VisVim.def \
-		src/VisVim/VisVim.mak \
-		src/VisVim/VisVim.h \
-		src/VisVim/VisVim.odl \
-		src/VisVim/VisVim.rc \
-		src/VisVim/VsReadMe.txt \
-
-# source files for DOS without CR/LF translation (also in the extra archive)
-SRC_DOS_BIN =	\
-		src/VisVim/Res/*.bmp \
-		src/tearoff.bmp \
-		src/tools.bmp \
-		src/tools16.bmp \
-		src/vim*.ico \
-		src/vim.tlb \
-		src/vimtbar.lib \
-		src/xpm/COPYRIGHT \
-		src/xpm/README.txt \
-		src/xpm/include/*.h \
-		src/xpm/x64/lib/libXpm.a \
-		src/xpm/x64/lib/libXpm.lib \
-		src/xpm/x86/lib/libXpm.a \
-		src/xpm/x86/lib/libXpm.lib \
-		src/vimtbar.dll \
-		nsis/icons/*.bmp \
-		nsis/icons/*.ico \
-
-# source files for Amiga, DOS, etc. (also in the extra archive)
-SRC_AMI_DOS =	\
-
-# source files for Amiga (also in the extra archive)
-SRC_AMI =	\
-		src.info \
-		src/INSTALLami.txt \
-		src/Make_dice.mak \
-		src/Make_manx.mak \
-		src/Make_morph.mak \
-		src/Make_sas.mak \
-		src/os_amiga.c \
-		src/os_amiga.h \
-		src/proto/os_amiga.pro \
-		src/testdir/Make_amiga.mak \
-		src/testdir/amiga.vim \
-		src/xxd/Make_amiga.mak \
-
 # source files for the Mac (also in the extra archive)
 SRC_MAC =	\
 		src/INSTALLmac.txt \
@@ -390,58 +246,12 @@ SRC_MAC =	\
 		src/proto/gui_mac.pro \
 		src/proto/os_mac_conv.pro \
 
-# source files for VMS (in the extra archive)
-SRC_VMS =	\
-		src/INSTALLvms.txt \
-		src/Make_vms.mms \
-		src/gui_gtk_vms.h \
-		src/os_vms.c \
-		src/os_vms_conf.h \
-		src/os_vms_mms.c \
-		src/proto/os_vms.pro \
-		src/testdir/Make_vms.mms \
-		src/testdir/vms.vim \
-		src/xxd/Make_vms.mms \
-		vimtutor.com \
-
-# source files for OS/2 (in the extra archive)
-SRC_OS2 =	\
-		src/Make_os2.mak \
-		src/os_os2_cfg.h \
-		src/testdir/Make_os2.mak \
-		src/testdir/todos.vim \
-		src/testdir/os2.vim \
-		src/xxd/Make_os2.mak \
-
-# source files for QNX (in the extra archive)
-SRC_QNX =	\
-		src/os_qnx.c \
-		src/os_qnx.h \
-		src/gui_photon.c \
-		src/proto/gui_photon.pro \
-		src/proto/os_qnx.pro \
-
-
 # source files for the extra archive (all sources that are not for Unix)
 SRC_EXTRA =	\
-		$(SRC_AMI) \
-		$(SRC_AMI_DOS) \
-		$(SRC_DOS) \
-		$(SRC_DOS_BIN) \
 		$(SRC_MAC) \
-		$(SRC_OS2) \
-		$(SRC_QNX) \
-		$(SRC_VMS) \
-		src/Make_mint.mak \
 		src/if_sniff.c \
 		src/infplist.xml \
 		src/link.390 \
-		src/os_beos.c \
-		src/os_beos.h \
-		src/os_beos.rsrc \
-		src/os_mint.h \
-		src/os_vms_fix.com \
-		src/toolbar.phi \
 
 # runtime files for all distributions
 RT_ALL =	\
@@ -551,108 +361,12 @@ RT_UNIX_DOS_BIN =	\
 		runtime/vim32x32.gif \
 		runtime/vim48x48.gif \
 
-# runtime not for unix or extra
-RT_NO_UNIX =	\
-
-# runtime for Amiga (also in the extra archive)
-RT_AMI_DOS =	\
-		runtime/doc/vim.man \
-		runtime/doc/vimdiff.man \
-		runtime/doc/vimtutor.man \
-		runtime/doc/xxd.man \
-
-# DOS runtime (also in the extra archive)
-RT_DOS =	\
-		runtime/rgb.txt \
-		vimtutor.bat \
-
-# DOS runtime without CR-LF translation (also in the extra archive)
-RT_DOS_BIN =	\
-		runtime/vimlogo.cdr \
-		runtime/vimlogo.eps \
-		runtime/vimlogo.gif \
-		runtime/vimlogo.pdf \
-
-# Amiga runtime (also in the extra archive)
-RT_AMI =	\
-		libs/arp.library \
-		runtime/doc.info \
-		runtime/doc/*.info \
-		runtime/icons/README.txt \
-		runtime/icons/*.info \
-		runtime/icons.info \
-		runtime/macros.info \
-		runtime/macros/*.info \
-		runtime/macros/hanoi/*.info \
-		runtime/macros/life/*.info \
-		runtime/macros/maze/*.info \
-		runtime/macros/urm/*.info \
-		runtime/tools.info \
-		runtime/tutor.info \
-		runtime/tutor/*.info \
-
-# runtime files in extra archive
-RT_EXTRA =	\
-		$(RT_AMI) \
-		$(RT_AMI_DOS) \
-		$(RT_DOS) \
-		$(RT_DOS_BIN) \
-
-# included in all Amiga archives
-ROOT_AMI =	\
-		Contents \
-		Contents.info \
-		runtime.info \
-		vimdir.info \
-
-# root files for the extra archive
-ROOT_EXTRA =	\
-		$(ROOT_AMI) \
-
-# files for Amiga small binary (also in extra archive)
-BIN_AMI =	\
-		Vim.info \
-		Xxd.info \
-
-# files for DOS binary (also in extra archive)
-BIN_DOS =	\
-		uninstal.txt \
-
-# files for Win32 OLE binary (also in extra archive)
-BIN_OLE =	\
-
-# files for Win32s binary (also in extra archive)
-BIN_W32S =	\
-
-# files for VMS binary (also in extra archive)
-BIN_VMS =	\
-
-# files for OS/2 binary (also in extra archive)
-BIN_OS2 =	\
-
-# binary files for extra archive
-BIN_EXTRA =	\
-		$(BIN_AMI) \
-		$(BIN_DOS) \
-		$(BIN_OLE) \
-		$(BIN_W32S) \
-		$(BIN_VMS) \
-		$(BIN_OS2) \
-
 # all files for extra archive
 EXTRA =		\
-		$(BIN_EXTRA) \
-		$(ROOT_EXTRA) \
-		$(RT_EXTRA) \
 		$(SRC_EXTRA) \
-		src/VisVim/VisVim.dll \
-		farsi/README.txt \
-		farsi/fonts/*/far-* \
 		runtime/vimlogo.xpm \
-		src/swis.s \
 		src/tee/Makefile \
 		src/tee/tee.c \
-		csdpmi4b.zip \
 
 # generic language files
 LANG_GEN = \
