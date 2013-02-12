@@ -1,48 +1,5 @@
-# This Makefile has two purposes:
-# 1. Starting the compilation of Vim for Unix.
-# 2. Creating the various distribution files.
-
-
 #########################################################################
-# 1. Starting the compilation of Vim for Unix.
-#
-# Using this Makefile without an argument will compile Vim for Unix.
-# "make install" is also possible.
-#
-# NOTE: If this doesn't work properly, first change directory to "src" and use
-# the Makefile there:
-#	cd src
-#	make [arguments]
-# Noticed on AIX systems when using this Makefile: Trying to run "cproto" or
-# something else after Vim has been compiled.  Don't know why...
-# Noticed on OS/390 Unix: Restarts configure.
-#
-# The first (default) target is "first".  This will result in running
-# "make first", so that the target from "src/auto/config.mk" is picked
-# up properly when config didn't run yet.  Doing "make all" before configure
-# has run can result in compiling with $(CC) empty.
-
-first:
-	@if test ! -f src/auto/config.mk; then \
-		cp src/config.mk.dist src/auto/config.mk; \
-	fi
-	@echo "Starting make in the src directory."
-	@echo "If there are problems, cd to the src directory and run make there"
-	cd src && $(MAKE) $@
-
-# Some make programs use the last target for the $@ default; put the other
-# targets separately to always let $@ expand to "first" by default.
-all install uninstall tools config configure reconfig proto depend lint tags types test testclean clean distclean:
-	@if test ! -f src/auto/config.mk; then \
-		cp src/config.mk.dist src/auto/config.mk; \
-	fi
-	@echo "Starting make in the src directory."
-	@echo "If there are problems, cd to the src directory and run make there"
-	cd src && $(MAKE) $@
-
-
-#########################################################################
-# 2. Creating the various distribution files.
+# Creating the various distribution files.
 #
 # TARGET	PRODUCES		CONTAINS
 # unixall	vim-#.#.tar.bz2		All runtime files and sources, for Unix
@@ -56,12 +13,6 @@ all install uninstall tools config configure reconfig proto depend lint tags typ
 
 MAJOR = 7
 MINOR = 3
-
-# Uncomment this line if the Win32s version is to be included.
-DOSBIN_S =  dosbin_s
-
-# Uncomment this line if the 16 bit DOS version is to be included.
-# DOSBIN_D16 = dosbin_d16
 
 # CHECKLIST for creating a new version:
 #
@@ -111,6 +62,9 @@ VIM	= vim
 include Filelist
 #.include "Filelist"
 
+default:
+	@echo "This makefile only created various distribution files."
+	@echo "You can compile Vim in src directory."
 
 # All output is put in the "dist" directory.
 dist:
