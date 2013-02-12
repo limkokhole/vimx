@@ -13,7 +13,8 @@ For details, see the `INSTALL` file in the `src` directory.
 
 ## Features
 
-* Unnecessary READMEs removed.
+* Removed unnecessary readme files.
+* Removed windows support.
 
 ## License
 
