@@ -15,6 +15,7 @@ For details, see the `INSTALL` file in the `src` directory.
 
 * Removed unnecessary README files.
 * Removed Windows, Amiga and OS/2 support.
+* Removed rtl, farsi and hebrew support.
 
 ## License
 
