@@ -10237,28 +10237,12 @@ spell_suggest(count)
 	vim_free(repl_to);
 	repl_to = NULL;
 
-#ifdef FEAT_RIGHTLEFT
-	/* When 'rightleft' is set the list is drawn right-left. */
-	cmdmsg_rl = curwin->w_p_rl;
-	if (cmdmsg_rl)
-	    msg_col = Columns - 1;
-#endif
-
 	/* List the suggestions. */
 	msg_start();
 	msg_row = Rows - 1;	/* for when 'cmdheight' > 1 */
 	lines_left = Rows;	/* avoid more prompt */
 	vim_snprintf((char *)IObuff, IOSIZE, _("Change \"%.*s\" to:"),
 						sug.su_badlen, sug.su_badptr);
-#ifdef FEAT_RIGHTLEFT
-	if (cmdmsg_rl && STRNCMP(IObuff, "Change", 6) == 0)
-	{
-	    /* And now the rabbit from the high hat: Avoid showing the
-	     * untranslated message rightleft. */
-	    vim_snprintf((char *)IObuff, IOSIZE, ":ot \"%.*s\" egnahC",
-						sug.su_badlen, sug.su_badptr);
-	}
-#endif
 	msg_puts(IObuff);
 	msg_clr_eos();
 	msg_putchar('\n');
@@ -10276,10 +10260,6 @@ spell_suggest(count)
 					       sug.su_badptr + stp->st_orglen,
 					      sug.su_badlen - stp->st_orglen);
 	    vim_snprintf((char *)IObuff, IOSIZE, "%2d", i + 1);
-#ifdef FEAT_RIGHTLEFT
-	    if (cmdmsg_rl)
-		rl_mirror(IObuff);
-#endif
 	    msg_puts(IObuff);
 
 	    vim_snprintf((char *)IObuff, IOSIZE, " \"%s\"", wcopy);
@@ -10303,21 +10283,12 @@ spell_suggest(count)
 		else
 		    vim_snprintf((char *)IObuff, IOSIZE, " (%d)",
 			    stp->st_score);
-#ifdef FEAT_RIGHTLEFT
-		if (cmdmsg_rl)
-		    /* Mirror the numbers, but keep the leading space. */
-		    rl_mirror(IObuff + 1);
-#endif
 		msg_advance(30);
 		msg_puts(IObuff);
 	    }
 	    msg_putchar('\n');
 	}
 
-#ifdef FEAT_RIGHTLEFT
-	cmdmsg_rl = FALSE;
-	msg_col = 0;
-#endif
 	/* Ask for choice. */
 	selected = prompt_for_number(&mouse_used);
 	if (mouse_used)

@@ -1930,16 +1930,6 @@ command_line_scan(parmp)
 		usage();
 		break;
 
-	    case 'H':		/* "-H" start in Hebrew mode: rl + hkmap set */
-#ifdef FEAT_RIGHTLEFT
-		p_hkmap = TRUE;
-		set_option_value((char_u *)"rl", 1L, NULL, 0);
-#else
-		mch_errmsg(_(e_nohebrew));
-		mch_exit(2);
-#endif
-		break;
-
 	    case 'l':		/* "-l" lisp mode, 'lisp' and 'showmatch' on */
 #ifdef FEAT_LISP
 		set_option_value((char_u *)"lisp", 1L, NULL, 0);
@@ -3210,9 +3200,6 @@ usage()
 #ifdef AMIGA
     main_msg(_("-f\t\t\tDon't use newcli to open window"));
     main_msg(_("-dev <device>\t\tUse <device> for I/O"));
-#endif
-#ifdef FEAT_RIGHTLEFT
-    main_msg(_("-H\t\t\tStart in Hebrew mode"));
 #endif
     main_msg(_("-T <terminal>\tSet terminal type to <terminal>"));
     main_msg(_("-u <vimrc>\t\tUse <vimrc> instead of any .vimrc"));

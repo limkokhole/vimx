@@ -5346,10 +5346,6 @@ gui_mch_draw_part_cursor(int w, int h, guicolor_T color)
     gdk_gc_set_foreground(gui.text_gc, gui.fgcolor);
     gdk_draw_rectangle(gui.drawarea->window, gui.text_gc,
 	    TRUE,
-#ifdef FEAT_RIGHTLEFT
-	    /* vertical line should be on the right of current point */
-	    CURSOR_BAR_RIGHT ? FILL_X(gui.col + 1) - w :
-#endif
 	    FILL_X(gui.col),
 	    FILL_Y(gui.row) + gui.char_height - h,
 	    w, h);

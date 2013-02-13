@@ -212,10 +212,6 @@
 #if defined(FEAT_WINDOWS) && defined(FEAT_QUICKFIX)
 # define PV_PVW		OPT_WIN(WV_PVW)
 #endif
-#ifdef FEAT_RIGHTLEFT
-# define PV_RL		OPT_WIN(WV_RL)
-# define PV_RLC		OPT_WIN(WV_RLC)
-#endif
 #ifdef FEAT_SCROLLBIND
 # define PV_SCBIND	OPT_WIN(WV_SCBIND)
 #endif
@@ -478,19 +474,6 @@ static struct vimoption
 #endif
 	options[] =
 {
-    {"aleph",	    "al",   P_NUM|P_VI_DEF|P_CURSWANT,
-#ifdef FEAT_RIGHTLEFT
-			    (char_u *)&p_aleph, PV_NONE,
-#else
-			    (char_u *)NULL, PV_NONE,
-#endif
-			    {
-#if (defined(MSDOS) || defined(WIN3264) || defined(OS2)) && !defined(FEAT_GUI_W32)
-			    (char_u *)128L,
-#else
-			    (char_u *)224L,
-#endif
-					    (char_u *)0L} SCRIPTID_INIT},
     {"antialias",   "anti", P_BOOL|P_VI_DEF|P_VIM|P_RCLR,
 #if defined(FEAT_GUI) && defined(MACOS_X)
 			    (char_u *)&p_antialias, PV_NONE,
@@ -506,13 +489,6 @@ static struct vimoption
     {"arabicshape", "arshape", P_BOOL|P_VI_DEF|P_VIM|P_RCLR,
 			    (char_u *)NULL, PV_NONE,
 			    {(char_u *)TRUE, (char_u *)0L} SCRIPTID_INIT},
-    {"allowrevins", "ari",  P_BOOL|P_VI_DEF|P_VIM,
-#ifdef FEAT_RIGHTLEFT
-			    (char_u *)&p_ari, PV_NONE,
-#else
-			    (char_u *)NULL, PV_NONE,
-#endif
-			    {(char_u *)FALSE, (char_u *)0L} SCRIPTID_INIT},
     {"ambiwidth",  "ambw",  P_STRING|P_VI_DEF|P_RCLR,
 #if defined(FEAT_MBYTE)
 			    (char_u *)&p_ambw, PV_NONE,
@@ -1357,20 +1333,6 @@ static struct vimoption
     {"history",	    "hi",   P_NUM|P_VIM,
 			    (char_u *)&p_hi, PV_NONE,
 			    {(char_u *)0L, (char_u *)20L} SCRIPTID_INIT},
-    {"hkmap",	    "hk",   P_BOOL|P_VI_DEF|P_VIM,
-#ifdef FEAT_RIGHTLEFT
-			    (char_u *)&p_hkmap, PV_NONE,
-#else
-			    (char_u *)NULL, PV_NONE,
-#endif
-			    {(char_u *)FALSE, (char_u *)0L} SCRIPTID_INIT},
-    {"hkmapp",	    "hkp",  P_BOOL|P_VI_DEF|P_VIM,
-#ifdef FEAT_RIGHTLEFT
-			    (char_u *)&p_hkmapp, PV_NONE,
-#else
-			    (char_u *)NULL, PV_NONE,
-#endif
-			    {(char_u *)FALSE, (char_u *)0L} SCRIPTID_INIT},
     {"hlsearch",    "hls",  P_BOOL|P_VI_DEF|P_VIM|P_RALL,
 			    (char_u *)&p_hls, PV_NONE,
 			    {(char_u *)FALSE, (char_u *)0L} SCRIPTID_INIT},
@@ -2059,29 +2021,6 @@ static struct vimoption
 			    (char_u *)NULL, PV_NONE,
 #endif
 			    {(char_u *)TRUE, (char_u *)0L} SCRIPTID_INIT},
-    {"revins",	    "ri",   P_BOOL|P_VI_DEF|P_VIM,
-#ifdef FEAT_RIGHTLEFT
-			    (char_u *)&p_ri, PV_NONE,
-#else
-			    (char_u *)NULL, PV_NONE,
-#endif
-			    {(char_u *)FALSE, (char_u *)0L} SCRIPTID_INIT},
-    {"rightleft",   "rl",   P_BOOL|P_VI_DEF|P_RWIN,
-#ifdef FEAT_RIGHTLEFT
-			    (char_u *)VAR_WIN, PV_RL,
-#else
-			    (char_u *)NULL, PV_NONE,
-#endif
-			    {(char_u *)FALSE, (char_u *)0L} SCRIPTID_INIT},
-    {"rightleftcmd", "rlc", P_STRING|P_ALLOCED|P_VI_DEF|P_RWIN,
-#ifdef FEAT_RIGHTLEFT
-			    (char_u *)VAR_WIN, PV_RLC,
-			    {(char_u *)"search", (char_u *)NULL}
-#else
-			    (char_u *)NULL, PV_NONE,
-			    {(char_u *)NULL, (char_u *)0L}
-#endif
-			    SCRIPTID_INIT},
     {"ruler",	    "ru",   P_BOOL|P_VI_DEF|P_VIM|P_RSTAT,
 #ifdef FEAT_CMDL_INFO
 			    (char_u *)&p_ru, PV_NONE,
@@ -9491,10 +9430,6 @@ get_varp(p)
 #if defined(FEAT_WINDOWS) && defined(FEAT_QUICKFIX)
 	case PV_PVW:	return (char_u *)&(curwin->w_p_pvw);
 #endif
-#ifdef FEAT_RIGHTLEFT
-	case PV_RL:	return (char_u *)&(curwin->w_p_rl);
-	case PV_RLC:	return (char_u *)&(curwin->w_p_rlc);
-#endif
 	case PV_SCROLL:	return (char_u *)&(curwin->w_p_scr);
 	case PV_WRAP:	return (char_u *)&(curwin->w_p_wrap);
 #ifdef FEAT_LINEBREAK
@@ -9646,8 +9581,6 @@ win_copy_options(wp_from, wp_to)
 {
     copy_winopt(&wp_from->w_onebuf_opt, &wp_to->w_onebuf_opt);
     copy_winopt(&wp_from->w_allbuf_opt, &wp_to->w_allbuf_opt);
-# ifdef FEAT_RIGHTLEFT
-# endif
 }
 #endif
 
@@ -9667,10 +9600,6 @@ copy_winopt(from, to)
     to->wo_rnu = from->wo_rnu;
 #ifdef FEAT_LINEBREAK
     to->wo_nuw = from->wo_nuw;
-#endif
-#ifdef FEAT_RIGHTLEFT
-    to->wo_rl  = from->wo_rl;
-    to->wo_rlc = vim_strsave(from->wo_rlc);
 #endif
 #ifdef FEAT_STL_OPT
     to->wo_stl = vim_strsave(from->wo_stl);
@@ -9744,9 +9673,6 @@ check_winopt(wop)
 # endif
     check_string_option(&wop->wo_fmr);
 #endif
-#ifdef FEAT_RIGHTLEFT
-    check_string_option(&wop->wo_rlc);
-#endif
 #ifdef FEAT_STL_OPT
     check_string_option(&wop->wo_stl);
 #endif
@@ -9773,9 +9699,6 @@ clear_winopt(wop)
     clear_string_option(&wop->wo_fdt);
 # endif
     clear_string_option(&wop->wo_fmr);
-#endif
-#ifdef FEAT_RIGHTLEFT
-    clear_string_option(&wop->wo_rlc);
 #endif
 #ifdef FEAT_STL_OPT
     clear_string_option(&wop->wo_stl);
@@ -10820,10 +10743,6 @@ paste_option_changed()
 #ifdef FEAT_CMDL_INFO
     static int	save_ru = 0;
 #endif
-#ifdef FEAT_RIGHTLEFT
-    static int	save_ri = 0;
-    static int	save_hkmap = 0;
-#endif
     buf_T	*buf;
 
     if (p_paste)
@@ -10847,10 +10766,6 @@ paste_option_changed()
 	    save_sm = p_sm;
 #ifdef FEAT_CMDL_INFO
 	    save_ru = p_ru;
-#endif
-#ifdef FEAT_RIGHTLEFT
-	    save_ri = p_ri;
-	    save_hkmap = p_hkmap;
 #endif
 	    /* save global values for local buffer options */
 	    p_tw_nopaste = p_tw;
@@ -10881,10 +10796,6 @@ paste_option_changed()
 # endif
 	p_ru = 0;		    /* no ruler */
 #endif
-#ifdef FEAT_RIGHTLEFT
-	p_ri = 0;		    /* no reverse insert */
-	p_hkmap = 0;		    /* no Hebrew keyboard */
-#endif
 	/* set global values for local buffer options */
 	p_tw = 0;
 	p_wm = 0;
@@ -10914,10 +10825,6 @@ paste_option_changed()
 	    status_redraw_all();    /* redraw to draw the ruler */
 # endif
 	p_ru = save_ru;
-#endif
-#ifdef FEAT_RIGHTLEFT
-	p_ri = save_ri;
-	p_hkmap = save_hkmap;
 #endif
 	/* set global values for local buffer options */
 	p_tw = p_tw_nopaste;

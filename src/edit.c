@@ -217,9 +217,6 @@ static void ins_reg __ARGS((void));
 static void ins_ctrl_g __ARGS((void));
 static void ins_ctrl_hat __ARGS((void));
 static int  ins_esc __ARGS((long *count, int cmdchar, int nomove));
-#ifdef FEAT_RIGHTLEFT
-static void ins_ctrl_ __ARGS((void));
-#endif
 #ifdef FEAT_VISUAL
 static int ins_start_select __ARGS((int c));
 #endif
@@ -276,13 +273,6 @@ static int	can_cindent;		/* may do cindenting on this line */
 #endif
 
 static int	old_indent = 0;		/* for ^^D command in insert mode */
-
-#ifdef FEAT_RIGHTLEFT
-static int	revins_on;		/* reverse insert mode on */
-static int	revins_chars;		/* how much to skip after edit */
-static int	revins_legal;		/* was the last char 'legal'? */
-static int	revins_scol;		/* start column of revins session */
-#endif
 
 static int	ins_need_undo;		/* call u_save() before inserting a
 					   char.  Set when edit() is called.
@@ -489,16 +479,6 @@ edit(cmdchar, startln, count)
 #ifdef FEAT_CMDL_INFO
     clear_showcmd();
 #endif
-#ifdef FEAT_RIGHTLEFT
-    /* there is no reverse replace mode */
-    revins_on = (State == INSERT && p_ri);
-    if (revins_on)
-	undisplay_dollar();
-    revins_chars = 0;
-    revins_legal = 0;
-    revins_scol = -1;
-#endif
-
     /*
      * Handle restarting Insert mode.
      * Don't do this for "CTRL-O ." (repeat an insert): we get here with
@@ -605,12 +585,6 @@ edit(cmdchar, startln, count)
      */
     for (;;)
     {
-#ifdef FEAT_RIGHTLEFT
-	if (!revins_legal)
-	    revins_scol = -1;	    /* reset on illegal motions */
-	else
-	    revins_legal = 0;
-#endif
 	if (arrow_used)	    /* don't repeat insert when arrow key used */
 	    count = 0;
 
@@ -744,11 +718,6 @@ edit(cmdchar, startln, count)
 #ifdef FEAT_AUTOCMD
 	/* Don't want K_CURSORHOLD for the second key, e.g., after CTRL-V. */
 	did_cursorhold = TRUE;
-#endif
-
-#ifdef FEAT_RIGHTLEFT
-	if (p_hkmap && KeyTyped)
-	    c = hkmap(c);		/* Hebrew mode mapping */
 #endif
 
 #ifdef FEAT_INS_EXPAND
@@ -889,19 +858,6 @@ edit(cmdchar, startln, count)
 							&& stop_arrow() == OK)
 		do_c_expr_indent();
 	}
-#endif
-
-#ifdef FEAT_RIGHTLEFT
-	if (curwin->w_p_rl)
-	    switch (c)
-	    {
-		case K_LEFT:	c = K_RIGHT; break;
-		case K_S_LEFT:	c = K_S_RIGHT; break;
-		case K_C_LEFT:	c = K_C_RIGHT; break;
-		case K_RIGHT:	c = K_LEFT; break;
-		case K_S_RIGHT: c = K_S_LEFT; break;
-		case K_C_RIGHT: c = K_C_LEFT; break;
-	    }
 #endif
 
 #ifdef FEAT_VISUAL
@@ -1055,14 +1011,6 @@ doESCkey:
 	case Ctrl_HAT:	/* switch input mode and/or langmap */
 	    ins_ctrl_hat();
 	    break;
-
-#ifdef FEAT_RIGHTLEFT
-	case Ctrl__:	/* switch between languages */
-	    if (!p_ari)
-		goto normalchar;
-	    ins_ctrl_();
-	    break;
-#endif
 
 	case Ctrl_D:	/* Make indent one shiftwidth smaller. */
 #if defined(FEAT_INS_EXPAND) && defined(FEAT_FIND_ID)
@@ -1468,10 +1416,6 @@ normalchar:
 		       c) && c != Ctrl_RSB))
 	    {
 		insert_special(c, FALSE, FALSE);
-#ifdef FEAT_RIGHTLEFT
-		revins_legal++;
-		revins_chars++;
-#endif
 	    }
 
 	    auto_format(FALSE, TRUE);
@@ -1635,10 +1579,6 @@ ins_ctrl_v()
     clear_showcmd();
 #endif
     insert_special(c, FALSE, TRUE);
-#ifdef FEAT_RIGHTLEFT
-    revins_chars++;
-    revins_legal++;
-#endif
 }
 
 /*
@@ -1672,28 +1612,8 @@ edit_putchar(c, highlight)
 	    attr = 0;
 	pc_row = W_WINROW(curwin) + curwin->w_wrow;
 	pc_col = W_WINCOL(curwin);
-#if defined(FEAT_RIGHTLEFT) || defined(FEAT_MBYTE)
+#if defined(FEAT_MBYTE)
 	pc_status = PC_STATUS_UNSET;
-#endif
-#ifdef FEAT_RIGHTLEFT
-	if (curwin->w_p_rl)
-	{
-	    pc_col += W_WIDTH(curwin) - 1 - curwin->w_wcol;
-# ifdef FEAT_MBYTE
-	    if (has_mbyte)
-	    {
-		int fix_col = mb_fix_col(pc_col, pc_row);
-
-		if (fix_col != pc_col)
-		{
-		    screen_putchar(' ', pc_row, fix_col, attr);
-		    --curwin->w_wcol;
-		    pc_status = PC_STATUS_RIGHT;
-		}
-	    }
-# endif
-	}
-	else
 #endif
 	{
 	    pc_col += curwin->w_wcol;
@@ -1704,7 +1624,7 @@ edit_putchar(c, highlight)
 	}
 
 	/* save the character to be able to put it back */
-#if defined(FEAT_RIGHTLEFT) || defined(FEAT_MBYTE)
+#if defined(FEAT_MBYTE)
 	if (pc_status == PC_STATUS_UNSET)
 #endif
 	{
@@ -5941,9 +5861,6 @@ insertchar(c, flags, second_indent)
 #ifdef FEAT_CINDENT
 	    && !cindent_on()
 #endif
-#ifdef FEAT_RIGHTLEFT
-	    && !p_ri
-#endif
 #ifdef FEAT_AUTOCMD
 	    && !has_insertcharpre()
 #endif
@@ -5976,14 +5893,7 @@ insertchar(c, flags, second_indent)
 		    || (virtcol += byte2cells(buf[i - 1])) < (colnr_T)textwidth)
 		&& !(!no_abbr && !vim_iswordc(c) && vim_iswordc(buf[i - 1])))
 	{
-#ifdef FEAT_RIGHTLEFT
-	    c = vgetc();
-	    if (p_hkmap && KeyTyped)
-		c = hkmap(c);		    /* Hebrew mode mapping */
-	    buf[i++] = c;
-#else
 	    buf[i++] = vgetc();
-#endif
 	}
 
 #ifdef FEAT_DIGRAPHS
@@ -7949,7 +7859,7 @@ in_cinkeys(keytyped, when, line_is_empty)
 }
 #endif /* FEAT_CINDENT */
 
-#if defined(FEAT_RIGHTLEFT) || defined(PROTO)
+#if defined(PROTO)
 /*
  * Map Hebrew keyboard when in hkmap mode.
  */
@@ -8346,9 +8256,6 @@ ins_esc(count, cmdchar, nomove)
 		       && !VIsual_active
 #endif
 		      ))
-#ifdef FEAT_RIGHTLEFT
-	    && !revins_on
-#endif
 				      )
     {
 #ifdef FEAT_VIRTUALEDIT
@@ -8401,35 +8308,6 @@ ins_esc(count, cmdchar, nomove)
 
     return TRUE;	    /* exit Insert mode */
 }
-
-#ifdef FEAT_RIGHTLEFT
-/*
- * Toggle language: hkmap and revins_on.
- * Move to end of reverse inserted text.
- */
-    static void
-ins_ctrl_()
-{
-    if (revins_on && revins_chars && revins_scol >= 0)
-    {
-	while (gchar_cursor() != NUL && revins_chars--)
-	    ++curwin->w_cursor.col;
-    }
-    p_ri = !p_ri;
-    revins_on = (State == INSERT && p_ri);
-    if (revins_on)
-    {
-	revins_scol = curwin->w_cursor.col;
-	revins_legal++;
-	revins_chars = 0;
-	undisplay_dollar();
-    }
-    else
-	revins_scol = -1;
-	p_hkmap = curwin->w_p_rl ^ p_ri;    /* be consistent! */
-    showmode();
-}
-#endif
 
 #ifdef FEAT_VISUAL
 /*
@@ -8668,9 +8546,6 @@ ins_bs(c, mode, inserted_space_p)
      */
     if (       bufempty()
 	    || (
-#ifdef FEAT_RIGHTLEFT
-		!revins_on &&
-#endif
 		((curwin->w_cursor.lnum == 1 && curwin->w_cursor.col == 0)
 		    || (!can_bs(BS_START)
 			&& (arrow_used
@@ -8693,10 +8568,6 @@ ins_bs(c, mode, inserted_space_p)
 #endif
 #ifdef FEAT_COMMENTS
     end_comment_pending = NUL;	/* After BS, don't auto-end comment */
-#endif
-#ifdef FEAT_RIGHTLEFT
-    if (revins_on)	    /* put cursor after last inserted char */
-	inc_cursor();
 #endif
 
 #ifdef FEAT_VIRTUALEDIT
@@ -8728,9 +8599,6 @@ ins_bs(c, mode, inserted_space_p)
     {
 	lnum = Insstart.lnum;
 	if (curwin->w_cursor.lnum == Insstart.lnum
-#ifdef FEAT_RIGHTLEFT
-			|| revins_on
-#endif
 				    )
 	{
 	    if (u_save((linenr_T)(curwin->w_cursor.lnum - 2),
@@ -8830,10 +8698,6 @@ ins_bs(c, mode, inserted_space_p)
 	/*
 	 * Delete character(s) before the cursor.
 	 */
-#ifdef FEAT_RIGHTLEFT
-	if (revins_on)		/* put cursor on last inserted char */
-	    dec_cursor();
-#endif
 	mincol = 0;
 						/* keep indent */
 	if (mode == BACKSPACE_LINE
@@ -8842,9 +8706,6 @@ ins_bs(c, mode, inserted_space_p)
 		    || cindent_on()
 #endif
 		   )
-#ifdef FEAT_RIGHTLEFT
-		&& !revins_on
-#endif
 			    )
 	{
 	    save_col = curwin->w_cursor.col;
@@ -8923,9 +8784,6 @@ ins_bs(c, mode, inserted_space_p)
 	 */
 	else do
 	{
-#ifdef FEAT_RIGHTLEFT
-	    if (!revins_on) /* put cursor on char to be deleted */
-#endif
 		dec_cursor();
 
 	    /* start of word? */
@@ -8939,14 +8797,7 @@ ins_bs(c, mode, inserted_space_p)
 		    && (vim_isspace(cc = gchar_cursor())
 			    || vim_iswordc(cc) != temp))
 	    {
-#ifdef FEAT_RIGHTLEFT
-		if (!revins_on)
-#endif
 		    inc_cursor();
-#ifdef FEAT_RIGHTLEFT
-		else if (State & REPLACE_FLAG)
-		    dec_cursor();
-#endif
 		break;
 	    }
 	    if (State & REPLACE_FLAG)
@@ -8967,23 +8818,11 @@ ins_bs(c, mode, inserted_space_p)
 		if (enc_utf8 && p_deco && cpc[0] != NUL)
 		    inc_cursor();
 #endif
-#ifdef FEAT_RIGHTLEFT
-		if (revins_chars)
-		{
-		    revins_chars--;
-		    revins_legal++;
-		}
-		if (revins_on && gchar_cursor() == NUL)
-		    break;
-#endif
 	    }
 	    /* Just a single backspace?: */
 	    if (mode == BACKSPACE_CHAR)
 		break;
 	} while (
-#ifdef FEAT_RIGHTLEFT
-		revins_on ||
-#endif
 		(curwin->w_cursor.col > mincol
 		 && (curwin->w_cursor.lnum != Insstart.lnum
 		     || curwin->w_cursor.col != Insstart.col)));
@@ -9251,12 +9090,6 @@ ins_left()
 	if (!im_is_preediting())
 #endif
 	    start_arrow(&tpos);
-#ifdef FEAT_RIGHTLEFT
-	/* If exit reversed string, position is fixed */
-	if (revins_scol != -1 && (int)curwin->w_cursor.col >= revins_scol)
-	    revins_legal++;
-	revins_chars++;
-#endif
     }
 
     /*
@@ -9364,11 +9197,6 @@ ins_right()
 		++curwin->w_cursor.col;
 	}
 
-#ifdef FEAT_RIGHTLEFT
-	revins_legal++;
-	if (revins_chars)
-	    revins_chars--;
-#endif
     }
     /* if 'whichwrap' set for cursor in insert mode, may move the
      * cursor to the next line */
@@ -9805,12 +9633,6 @@ ins_eol(c)
 	coladvance(getviscol());
 #endif
 
-#ifdef FEAT_RIGHTLEFT
-    /* NL in reverse insert will always start in the end of
-     * current line. */
-    if (revins_on)
-	curwin->w_cursor.col += (colnr_T)STRLEN(ml_get_cursor());
-#endif
 
     AppendToRedobuff(NL_STR);
     i = open_line(FORWARD,
@@ -10001,10 +9823,6 @@ ins_ctrl_ey(tc)
 	    curbuf->b_p_tw = -1;
 	    insert_special(c, TRUE, FALSE);
 	    curbuf->b_p_tw = tw_save;
-#ifdef FEAT_RIGHTLEFT
-	    revins_chars++;
-	    revins_legal++;
-#endif
 	    c = Ctrl_V;	/* pretend CTRL-V is last character */
 	    auto_format(FALSE, TRUE);
 	}

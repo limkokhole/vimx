@@ -12350,9 +12350,6 @@ f_has(argvars, rettv)
 #ifdef FEAT_QUICKFIX
 	"quickfix",
 #endif
-#ifdef FEAT_RIGHTLEFT
-	"rightleft",
-#endif
 #if defined(FEAT_RUBY) && !defined(DYNAMIC_RUBY)
 	"ruby",
 #endif

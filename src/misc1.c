@@ -2301,9 +2301,6 @@ ins_char_bytes(buf, charlen)
 	    showmatch(c);
     }
 
-#ifdef FEAT_RIGHTLEFT
-    if (!p_ri || (State & REPLACE_FLAG))
-#endif
     {
 	/* Normal insert: move cursor right */
 #ifdef FEAT_MBYTE

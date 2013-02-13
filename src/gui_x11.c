@@ -2797,10 +2797,6 @@ gui_mch_draw_part_cursor(w, h, color)
     gui_mch_set_fg_color(color);
 
     XFillRectangle(gui.dpy, gui.wid, gui.text_gc,
-#ifdef FEAT_RIGHTLEFT
-	    /* vertical line should be on the right of current point */
-	    CURSOR_BAR_RIGHT ? FILL_X(gui.col + 1) - w :
-#endif
 		FILL_X(gui.col),
 	    FILL_Y(gui.row) + gui.char_height - h,
 	    w, h);

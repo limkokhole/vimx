@@ -395,12 +395,6 @@ shift_block(oap, amount)
     colnr_T		ws_vcol;
     int			i = 0, j = 0;
     int			len;
-#ifdef FEAT_RIGHTLEFT
-    int			old_p_ri = p_ri;
-
-    p_ri = 0;			/* don't want revins in ident */
-#endif
-
     State = INSERT;		/* don't want REPLACE for State */
     block_prep(oap, &bd, curwin->w_cursor.lnum, TRUE);
     if (bd.is_short)
@@ -548,9 +542,6 @@ shift_block(oap, amount)
     changed_bytes(curwin->w_cursor.lnum, (colnr_T)bd.textcol);
     State = oldstate;
     curwin->w_cursor.col = oldcol;
-#ifdef FEAT_RIGHTLEFT
-    p_ri = old_p_ri;
-#endif
 }
 #endif
 
@@ -5262,30 +5253,7 @@ block_prep(oap, bdp, lnum, is_del)
 }
 #endif /* FEAT_VISUAL */
 
-#ifdef FEAT_RIGHTLEFT
-static void reverse_line __ARGS((char_u *s));
-
-    static void
-reverse_line(s)
-    char_u *s;
-{
-    int	    i, j;
-    char_u  c;
-
-    if ((i = (int)STRLEN(s) - 1) <= 0)
-	return;
-
-    curwin->w_cursor.col = i - curwin->w_cursor.col;
-    for (j = 0; j < i; j++, i--)
-    {
-	c = s[i]; s[i] = s[j]; s[j] = c;
-    }
-}
-
-# define RLADDSUBFIX(ptr) if (curwin->w_p_rl) reverse_line(ptr);
-#else
 # define RLADDSUBFIX(ptr)
-#endif
 
 /*
  * add or subtract 'Prenum1' from a number in a line
@@ -5550,10 +5518,6 @@ do_addsub(command, Prenum1)
     }
     --curwin->w_cursor.col;
     curwin->w_set_curswant = TRUE;
-#ifdef FEAT_RIGHTLEFT
-    ptr = ml_get_buf(curbuf, curwin->w_cursor.lnum, TRUE);
-    RLADDSUBFIX(ptr);
-#endif
     return OK;
 }
 

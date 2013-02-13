@@ -299,15 +299,6 @@
 #endif
 
 /*
- * +rightleft		Right-to-left editing/typing support.
- *
- * Disabled for EBCDIC as it requires multibyte.
- */
-#if defined(FEAT_BIG) && !defined(EBCDIC)
-# define FEAT_RIGHTLEFT
-#endif
-
-/*
  * +emacs_tags		When FEAT_EMACS_TAGS defined: Include support for
  *			emacs style TAGS file.
  */

@@ -125,13 +125,8 @@ static void copy_text_attr __ARGS((int off, char_u *buf, int len, int attr));
 #endif
 static int win_line __ARGS((win_T *, linenr_T, int, int, int nochange));
 static int char_needs_redraw __ARGS((int off_from, int off_to, int cols));
-#ifdef FEAT_RIGHTLEFT
-static void screen_line __ARGS((int row, int coloff, int endcol, int clear_width, int rlflag));
-# define SCREEN_LINE(r, o, e, c, rl)    screen_line((r), (o), (e), (c), (rl))
-#else
 static void screen_line __ARGS((int row, int coloff, int endcol, int clear_width));
 # define SCREEN_LINE(r, o, e, c, rl)    screen_line((r), (o), (e), (c))
-#endif
 #ifdef FEAT_VERTSPLIT
 static void draw_vsep_win __ARGS((win_T *wp, int row));
 #endif
@@ -2090,46 +2085,6 @@ win_draw_end(wp, c1, c2, row, endrow, hl)
 # define FDC_OFF 0
 #endif
 
-#ifdef FEAT_RIGHTLEFT
-    if (wp->w_p_rl)
-    {
-	/* No check for cmdline window: should never be right-left. */
-# ifdef FEAT_FOLDING
-	n = wp->w_p_fdc;
-
-	if (n > 0)
-	{
-	    /* draw the fold column at the right */
-	    if (n > W_WIDTH(wp))
-		n = W_WIDTH(wp);
-	    screen_fill(W_WINROW(wp) + row, W_WINROW(wp) + endrow,
-		    W_ENDCOL(wp) - n, (int)W_ENDCOL(wp),
-		    ' ', ' ', hl_attr(HLF_FC));
-	}
-# endif
-# ifdef FEAT_SIGNS
-	if (draw_signcolumn(wp))
-	{
-	    int nn = n + 2;
-
-	    /* draw the sign column left of the fold column */
-	    if (nn > W_WIDTH(wp))
-		nn = W_WIDTH(wp);
-	    screen_fill(W_WINROW(wp) + row, W_WINROW(wp) + endrow,
-		    W_ENDCOL(wp) - nn, (int)W_ENDCOL(wp) - n,
-		    ' ', ' ', hl_attr(HLF_SC));
-	    n = nn;
-	}
-# endif
-	screen_fill(W_WINROW(wp) + row, W_WINROW(wp) + endrow,
-		W_WINCOL(wp), W_ENDCOL(wp) - 1 - FDC_OFF,
-		c2, c2, hl_attr(hl));
-	screen_fill(W_WINROW(wp) + row, W_WINROW(wp) + endrow,
-		W_ENDCOL(wp) - 1 - FDC_OFF, W_ENDCOL(wp) - FDC_OFF,
-		c1, c2, hl_attr(hl));
-    }
-    else
-#endif
     {
 #ifdef FEAT_CMDWIN
 	if (cmdwin_type != 0 && wp == curwin)
@@ -2230,7 +2185,6 @@ fold_line(wp, fold_count, foldinfo, lnum, row)
 
     /*
      * 1. Add the cmdwin_type for the command-line window
-     * Ignores 'rightleft', this window is never right-left.
      */
 #ifdef FEAT_CMDWIN
     if (cmdwin_type != 0 && wp == curwin)
@@ -2254,34 +2208,12 @@ fold_line(wp, fold_count, foldinfo, lnum, row)
     if (fdc > 0)
     {
 	fill_foldcolumn(buf, wp, TRUE, lnum);
-#ifdef FEAT_RIGHTLEFT
-	if (wp->w_p_rl)
-	{
-	    int		i;
-
-	    copy_text_attr(off + W_WIDTH(wp) - fdc - col, buf, fdc,
-							     hl_attr(HLF_FC));
-	    /* reverse the fold column */
-	    for (i = 0; i < fdc; ++i)
-		ScreenLines[off + W_WIDTH(wp) - i - 1 - col] = buf[i];
-	}
-	else
-#endif
 	    copy_text_attr(off + col, buf, fdc, hl_attr(HLF_FC));
 	col += fdc;
     }
 
-#ifdef FEAT_RIGHTLEFT
-# define RL_MEMSET(p, v, l)  if (wp->w_p_rl) \
-				for (ri = 0; ri < l; ++ri) \
-				   ScreenAttrs[off + (W_WIDTH(wp) - (p) - (l)) + ri] = v; \
-			     else \
-				for (ri = 0; ri < l; ++ri) \
-				   ScreenAttrs[off + (p) + ri] = v
-#else
 # define RL_MEMSET(p, v, l)   for (ri = 0; ri < l; ++ri) \
 				 ScreenAttrs[off + (p) + ri] = v
-#endif
 
     /* Set all attributes of the 'number' or 'relativenumber' column and the
      * text */
@@ -2296,13 +2228,6 @@ fold_line(wp, fold_count, foldinfo, lnum, row)
 	{
 	    if (len > 2)
 		len = 2;
-# ifdef FEAT_RIGHTLEFT
-	    if (wp->w_p_rl)
-		/* the line number isn't reversed */
-		copy_text_attr(off + W_WIDTH(wp) - len - col,
-					(char_u *)"  ", len, hl_attr(HLF_FL));
-	    else
-# endif
 		copy_text_attr(off + col, (char_u *)"  ", len, hl_attr(HLF_FL));
 	    col += len;
 	}
@@ -2339,13 +2264,6 @@ fold_line(wp, fold_count, foldinfo, lnum, row)
 	    }
 
 	    sprintf((char *)buf, fmt, w, num);
-#ifdef FEAT_RIGHTLEFT
-	    if (wp->w_p_rl)
-		/* the line number isn't reversed */
-		copy_text_attr(off + W_WIDTH(wp) - len - col, buf, len,
-							     hl_attr(HLF_FL));
-	    else
-#endif
 		copy_text_attr(off + col, buf, len, hl_attr(HLF_FL));
 	    col += len;
 	}
@@ -2373,11 +2291,6 @@ fold_line(wp, fold_count, foldinfo, lnum, row)
 	int	c_len;
 	char_u	*p;
 
-# ifdef FEAT_RIGHTLEFT
-	if (wp->w_p_rl)
-	    idx = off;
-	else
-# endif
 	    idx = off + col;
 
 	/* Store multibyte characters in ScreenLines[] et al. correctly. */
@@ -2386,9 +2299,6 @@ fold_line(wp, fold_count, foldinfo, lnum, row)
 	    cells = (*mb_ptr2cells)(p);
 	    c_len = (*mb_ptr2len)(p);
 	    if (col + cells > W_WIDTH(wp)
-# ifdef FEAT_RIGHTLEFT
-		    - (wp->w_p_rl ? col : 0)
-# endif
 		    )
 		break;
 	    ScreenLines[idx] = *p;
@@ -2437,25 +2347,13 @@ fold_line(wp, fold_count, foldinfo, lnum, row)
 	    len = W_WIDTH(wp) - col;
 	if (len > 0)
 	{
-#ifdef FEAT_RIGHTLEFT
-	    if (wp->w_p_rl)
-		STRNCPY(current_ScreenLine, text, len);
-	    else
-#endif
 		STRNCPY(current_ScreenLine + col, text, len);
 	    col += len;
 	}
     }
 
     /* Fill the rest of the line with the fold filler */
-#ifdef FEAT_RIGHTLEFT
-    if (wp->w_p_rl)
-	col -= txtcol;
-#endif
     while (col < W_WIDTH(wp)
-#ifdef FEAT_RIGHTLEFT
-		    - (wp->w_p_rl ? txtcol : 0)
-#endif
 	    )
     {
 #ifdef FEAT_MBYTE
@@ -3323,16 +3221,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 
     off = (unsigned)(current_ScreenLine - ScreenLines);
     col = 0;
-#ifdef FEAT_RIGHTLEFT
-    if (wp->w_p_rl)
-    {
-	/* Rightleft window: process the text in the normal direction, but put
-	 * it in current_ScreenLine[] from right to left.  Start at the
-	 * rightmost column of the window. */
-	col = W_WIDTH(wp) - 1;
-	off += col;
-    }
-#endif
 
     /*
      * Repeat for the whole displayed line.
@@ -3470,10 +3358,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 			if (wp->w_skipcol > 0)
 			    for (p_extra = extra; *p_extra == ' '; ++p_extra)
 				*p_extra = '-';
-#ifdef FEAT_RIGHTLEFT
-			if (wp->w_p_rl)		    /* reverse line numbers */
-			    rl_mirror(extra);
-#endif
 			p_extra = extra;
 			c_extra = NUL;
 		    }
@@ -3505,11 +3389,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 			c_extra = '-';
 		    else
 			c_extra = fill_diff;
-#  ifdef FEAT_RIGHTLEFT
-		    if (wp->w_p_rl)
-			n_extra = col + 1;
-		    else
-#  endif
 			n_extra = W_WIDTH(wp) - col;
 		    char_attr = hl_attr(HLF_DED);
 		}
@@ -3792,9 +3671,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 		    /* If a double-width char doesn't fit display a '>' in the
 		     * last column. */
 		    if ((
-# ifdef FEAT_RIGHTLEFT
-			    wp->w_p_rl ? (col <= 0) :
-# endif
 				    (col >= W_WIDTH(wp) - 1))
 			    && (*mb_char2cells)(mb_c) == 2)
 		    {
@@ -3874,10 +3750,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 # endif
 			{
 			    transchar_hex(extra, mb_c);
-# ifdef FEAT_RIGHTLEFT
-			    if (wp->w_p_rl)		/* reverse */
-				rl_mirror(extra);
-# endif
 			}
 # ifdef UNICODE16
 			else if (utf_char2cells(mb_c) != 2)
@@ -3947,9 +3819,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 		 * last column; the character is displayed at the start of the
 		 * next line. */
 		if ((
-# ifdef FEAT_RIGHTLEFT
-			    wp->w_p_rl ? (col <= 0) :
-# endif
 				(col >= W_WIDTH(wp) - 1))
 			&& (*mb_char2cells)(mb_c) == 2)
 		{
@@ -4262,9 +4131,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 				&& VIsual_mode != Ctrl_V
 #endif
 				&& (
-# ifdef FEAT_RIGHTLEFT
-				    wp->w_p_rl ? (col >= 0) :
-# endif
 				    (col < W_WIDTH(wp)))
 				&& !(noinvcur
 				    && lnum == wp->w_cursor.lnum
@@ -4329,10 +4195,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 		else if (c != NUL)
 		{
 		    p_extra = transchar(c);
-#ifdef FEAT_RIGHTLEFT
-		    if ((dy_flags & DY_UHEX) && wp->w_p_rl)
-			rl_mirror(p_extra);	/* reverse "<12>" */
-#endif
 		    n_extra = byte2cells(c) - 1;
 		    c_extra = NUL;
 		    c = *p_extra++;
@@ -4354,9 +4216,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 			 && tocol != MAXCOL
 			 && vcol < tocol
 			 && (
-# ifdef FEAT_RIGHTLEFT
-			    wp->w_p_rl ? (col >= 0) :
-# endif
 			    (col < W_WIDTH(wp))))
 		{
 		    c = ' ';
@@ -4370,9 +4229,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 # endif
 			    line_attr != 0
 			) && (
-# ifdef FEAT_RIGHTLEFT
-			    wp->w_p_rl ? (col >= 0) :
-# endif
 			    (col
 # ifdef FEAT_CONCEAL
 				- boguscols
@@ -4430,14 +4286,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 		    vcol += n_extra;
 		    if (wp->w_p_wrap && n_extra > 0)
 		    {
-# ifdef FEAT_RIGHTLEFT
-			if (wp->w_p_rl)
-			{
-			    col -= n_extra;
-			    boguscols -= n_extra;
-			}
-			else
-# endif
 			{
 			    boguscols += n_extra;
 			    col += n_extra;
@@ -4630,14 +4478,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 	    {
 		int n = 0;
 
-#ifdef FEAT_RIGHTLEFT
-		if (wp->w_p_rl)
-		{
-		    if (col < 0)
-			n = 1;
-		}
-		else
-#endif
 		{
 		    if (col >= W_WIDTH(wp))
 			n = -1;
@@ -4686,14 +4526,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 		}
 #endif
 		ScreenAttrs[off] = char_attr;
-#ifdef FEAT_RIGHTLEFT
-		if (wp->w_p_rl)
-		{
-		    --col;
-		    --off;
-		}
-		else
-#endif
 		{
 		    ++col;
 		    ++off;
@@ -4745,9 +4577,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 					W_WIDTH(wp) * (row - startrow + 1) + v
 		      && lnum != wp->w_cursor.lnum)
 		    || draw_color_col)
-# ifdef FEAT_RIGHTLEFT
-		    && !wp->w_p_rl
-# endif
 		    )
 	    {
 		int	rightmost_vcol = 0;
@@ -4816,9 +4645,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 		&& filler_todo <= 0
 #endif
 		&& (
-#ifdef FEAT_RIGHTLEFT
-		    wp->w_p_rl ? col == 0 :
-#endif
 		    col == W_WIDTH(wp) - 1)
 		&& (*ptr != NUL
 		    || (wp->w_p_list && lcs_eol_one > 0)
@@ -4875,14 +4701,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 	    /*
 	     * Store the character.
 	     */
-#if defined(FEAT_RIGHTLEFT) && defined(FEAT_MBYTE)
-	    if (has_mbyte && wp->w_p_rl && (*mb_char2cells)(mb_c) > 1)
-	    {
-		/* A double-wide character is: put first halve in left cell. */
-		--off;
-		--col;
-	    }
-#endif
 	    ScreenLines[off] = c;
 #ifdef FEAT_MBYTE
 	    if (enc_dbcs == DBCS_JPNU)
@@ -4936,23 +4754,7 @@ win_line(wp, lnum, startrow, endrow, nochange)
 		 * the character, otherwise highlighting won't stop. */
 		if (tocol == vcol)
 		    ++tocol;
-#ifdef FEAT_RIGHTLEFT
-		if (wp->w_p_rl)
-		{
-		    /* now it's time to backup one cell */
-		    --off;
-		    --col;
-		}
-#endif
 	    }
-#endif
-#ifdef FEAT_RIGHTLEFT
-	    if (wp->w_p_rl)
-	    {
-		--off;
-		--col;
-	    }
-	    else
 #endif
 	    {
 		++off;
@@ -4984,14 +4786,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 		if (n_extra > 0)
 		{
 		    vcol += n_extra;
-# ifdef FEAT_RIGHTLEFT
-		    if (wp->w_p_rl)
-		    {
-			col -= n_extra;
-			boguscols -= n_extra;
-		    }
-		    else
-# endif
 		    {
 			col += n_extra;
 			boguscols += n_extra;
@@ -5005,14 +4799,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 		if (has_mbyte && (*mb_char2cells)(mb_c) > 1)
 		{
 		    /* Need to fill two screen columns. */
-#  ifdef FEAT_RIGHTLEFT
-		    if (wp->w_p_rl)
-		    {
-			--boguscols;
-			--col;
-		    }
-		    else
-#  endif
 		    {
 			++boguscols;
 			++col;
@@ -5020,64 +4806,53 @@ win_line(wp, lnum, startrow, endrow, nochange)
 		}
 # endif
 
-# ifdef FEAT_RIGHTLEFT
-		if (wp->w_p_rl)
-		{
-		    --boguscols;
-		    --col;
-		}
-		else
-# endif
-		{
-		    ++boguscols;
-		    ++col;
-		}
-	    }
-	    else
-	    {
-		if (n_extra > 0)
-		{
-		    vcol += n_extra;
-		    n_extra = 0;
-		    n_attr = 0;
-		}
-	    }
+               {
+                   ++boguscols;
+                   ++col;
+               }
+           }
+           else
+           {
+               if (n_extra > 0)
+               {
+                   vcol += n_extra;
+                   n_extra = 0;
+                   n_attr = 0;
+               }
+           }
 
-	}
+       }
 #endif /* FEAT_CONCEAL */
-	else
-	    --n_skip;
+       else
+           --n_skip;
 
-	/* Only advance the "vcol" when after the 'number' or 'relativenumber'
-	 * column. */
-	if (draw_state > WL_NR
+       /* Only advance the "vcol" when after the 'number' or 'relativenumber'
+        * column. */
+       if (draw_state > WL_NR
 #ifdef FEAT_DIFF
-		&& filler_todo <= 0
+               && filler_todo <= 0
 #endif
-		)
-	    ++vcol;
+               )
+           ++vcol;
 
 #ifdef FEAT_SYN_HL
-	if (vcol_save_attr >= 0)
-	    char_attr = vcol_save_attr;
+       if (vcol_save_attr >= 0)
+           char_attr = vcol_save_attr;
 #endif
 
-	/* restore attributes after "predeces" in 'listchars' */
-	if (draw_state > WL_NR && n_attr3 > 0 && --n_attr3 == 0)
-	    char_attr = saved_attr3;
+       /* restore attributes after "predeces" in 'listchars' */
+       if (draw_state > WL_NR && n_attr3 > 0 && --n_attr3 == 0)
+           char_attr = saved_attr3;
 
-	/* restore attributes after last 'listchars' or 'number' char */
-	if (n_attr > 0 && draw_state == WL_LINE && --n_attr == 0)
-	    char_attr = saved_attr2;
+       /* restore attributes after last 'listchars' or 'number' char */
+       if (n_attr > 0 && draw_state == WL_LINE && --n_attr == 0)
+           char_attr = saved_attr2;
 
-	/*
-	 * At end of screen line and there is more to come: Display the line
-	 * so far.  If there is no more to display it is caught above.
-	 */
-	if ((
-#ifdef FEAT_RIGHTLEFT
-	    wp->w_p_rl ? (col < 0) :
-#endif
+       /*
+        * At end of screen line and there is more to come: Display the line
+        * so far.  If there is no more to display it is caught above.
+        */
+       if ((
 				    (col >= W_WIDTH(wp)))
 		&& (*ptr != NUL
 #ifdef FEAT_DIFF
@@ -5192,14 +4967,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 
 	    col = 0;
 	    off = (unsigned)(current_ScreenLine - ScreenLines);
-#ifdef FEAT_RIGHTLEFT
-	    if (wp->w_p_rl)
-	    {
-		col = W_WIDTH(wp) - 1;	/* col is not used if breaking! */
-		off += col;
-	    }
-#endif
-
 	    /* reset the drawing state for the start of a wrapped line */
 	    draw_state = WL_START;
 	    saved_n_extra = n_extra;
@@ -5312,17 +5079,11 @@ char_needs_redraw(off_from, off_to, cols)
  */
     static void
 screen_line(row, coloff, endcol, clear_width
-#ifdef FEAT_RIGHTLEFT
-				    , rlflag
-#endif
 						)
     int	    row;
     int	    coloff;
     int	    endcol;
     int	    clear_width;
-#ifdef FEAT_RIGHTLEFT
-    int	    rlflag;
-#endif
 {
     unsigned	    off_from;
     unsigned	    off_to;
@@ -5367,32 +5128,6 @@ screen_line(row, coloff, endcol, clear_width
     max_off_to = LineOffset[row] + screen_Columns;
 #endif
 
-#ifdef FEAT_RIGHTLEFT
-    if (rlflag)
-    {
-	/* Clear rest first, because it's left of the text. */
-	if (clear_width > 0)
-	{
-	    while (col <= endcol && ScreenLines[off_to] == ' '
-		    && ScreenAttrs[off_to] == 0
-# ifdef FEAT_MBYTE
-				  && (!enc_utf8 || ScreenLinesUC[off_to] == 0)
-# endif
-						  )
-	    {
-		++off_to;
-		++col;
-	    }
-	    if (col <= endcol)
-		screen_fill(row, row + 1, col + coloff,
-					    endcol + coloff + 1, ' ', ' ', 0);
-	}
-	col = endcol + 1;
-	off_to = LineOffset[row] + col + coloff;
-	off_from += col;
-	endcol = (clear_width > 0 ? clear_width : -clear_width);
-    }
-#endif /* FEAT_RIGHTLEFT */
 
     redraw_next = char_needs_redraw(off_from, off_to, endcol - col);
 
@@ -5603,9 +5338,6 @@ screen_line(row, coloff, endcol, clear_width
 #endif
 
     if (clear_width > 0
-#ifdef FEAT_RIGHTLEFT
-		    && !rlflag
-#endif
 				   )
     {
 #ifdef FEAT_GUI
@@ -5716,7 +5448,7 @@ screen_line(row, coloff, endcol, clear_width
     }
 }
 
-#if defined(FEAT_RIGHTLEFT) || defined(PROTO)
+#if defined(PROTO)
 /*
  * Mirror text "str" for right-left displaying.
  * Only works for single-byte characters (e.g., numbers).
@@ -7417,10 +7149,6 @@ screen_char(off, row, col)
     /* Outputting the last character on the screen may scrollup the screen.
      * Don't to it!  Mark the character invalid (update it when scrolled up) */
     if (row == screen_Rows - 1 && col == screen_Columns - 1
-#ifdef FEAT_RIGHTLEFT
-	    /* account for first command-line character in rightleft mode */
-	    && !cmdmsg_rl
-#endif
        )
     {
 	ScreenAttrs[off] = (sattr_T)-1;
@@ -8605,17 +8333,6 @@ setcursor()
 	validate_cursor();
 	windgoto(W_WINROW(curwin) + curwin->w_wrow,
 		W_WINCOL(curwin) + (
-#ifdef FEAT_RIGHTLEFT
-		/* With 'rightleft' set and the cursor on a double-wide
-		 * character, position it on the leftmost column. */
-		curwin->w_p_rl ? ((int)W_WIDTH(curwin) - curwin->w_wcol - (
-# ifdef FEAT_MBYTE
-			(has_mbyte
-			   && (*mb_ptr2cells)(ml_get_cursor()) == 2
-			   && vim_isprintc(gchar_cursor())) ? 2 :
-# endif
-			1)) :
-#endif
 							    curwin->w_wcol));
     }
 }
@@ -9475,10 +9192,6 @@ showmode()
 		    MSG_PUTS_ATTR(_(" REPLACE"), attr);
 		else if (State & INSERT)
 		{
-#ifdef FEAT_RIGHTLEFT
-		    if (p_ri)
-			MSG_PUTS_ATTR(_(" REVERSE"), attr);
-#endif
 		    MSG_PUTS_ATTR(_(" INSERT"), attr);
 		}
 		else if (restart_edit == 'I')
@@ -9487,10 +9200,6 @@ showmode()
 		    MSG_PUTS_ATTR(_(" (replace)"), attr);
 		else if (restart_edit == 'V')
 		    MSG_PUTS_ATTR(_(" (vreplace)"), attr);
-#ifdef FEAT_RIGHTLEFT
-		if (p_hkmap)
-		    MSG_PUTS_ATTR(_(" Hebrew"), attr);
-#endif
 #ifdef FEAT_KEYMAP
 		if (State & LANGMAP)
 		{

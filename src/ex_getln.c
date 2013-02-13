@@ -73,11 +73,6 @@ static int	calc_hist_idx __ARGS((int histype, int num));
 # endif
 #endif
 
-#ifdef FEAT_RIGHTLEFT
-static int	cmd_hkmap = 0;	/* Hebrew mapping during command line */
-#endif
-
-
 static int	cmdline_charsize __ARGS((int idx));
 static void	set_cmdspos __ARGS((void));
 static void	set_cmdspos_cursor __ARGS((void));
@@ -209,12 +204,6 @@ getcmdline(firstc, count, indent)
 	break_ctrl_c = TRUE;
     }
 #endif
-#ifdef FEAT_RIGHTLEFT
-    /* start without Hebrew mapping for a command line */
-    if (firstc == ':' || firstc == '=' || firstc == '>')
-	cmd_hkmap = 0;
-#endif
-
     ccline.overstrike = FALSE;		    /* always start in insert mode */
 #ifdef FEAT_SEARCH_EXTRA
     old_cursor = curwin->w_cursor;	    /* needs to be restored later */
@@ -252,14 +241,6 @@ getcmdline(firstc, count, indent)
 
     ExpandInit(&xpc);
     ccline.xpc = &xpc;
-
-#ifdef FEAT_RIGHTLEFT
-    if (curwin->w_p_rl && *curwin->w_p_rlc == 's'
-					  && (firstc == '/' || firstc == '?'))
-	cmdmsg_rl = TRUE;
-    else
-	cmdmsg_rl = FALSE;
-#endif
 
     redir_off = TRUE;		/* don't redirect the typed command */
     if (!cmd_silent)
@@ -360,25 +341,6 @@ getcmdline(firstc, count, indent)
 	if (KeyTyped)
 	{
 	    some_key_typed = TRUE;
-#ifdef FEAT_RIGHTLEFT
-	    if (cmd_hkmap)
-		c = hkmap(c);
-	    if (cmdmsg_rl && !KeyStuffed)
-	    {
-		/* Invert horizontal movements and operations.  Only when
-		 * typed by the user directly, not when the result of a
-		 * mapping. */
-		switch (c)
-		{
-		    case K_RIGHT:   c = K_LEFT; break;
-		    case K_S_RIGHT: c = K_S_LEFT; break;
-		    case K_C_RIGHT: c = K_C_LEFT; break;
-		    case K_LEFT:    c = K_RIGHT; break;
-		    case K_S_LEFT:  c = K_S_RIGHT; break;
-		    case K_C_LEFT:  c = K_C_RIGHT; break;
-		}
-	    }
-#endif
 	}
 
 	/*
@@ -993,11 +955,6 @@ getcmdline(firstc, count, indent)
 		    ccline.cmdbuff = NULL;
 		    if (!cmd_silent)
 		    {
-#ifdef FEAT_RIGHTLEFT
-			if (cmdmsg_rl)
-			    msg_col = Columns;
-			else
-#endif
 			    msg_col = 0;
 			msg_putchar(' ');		/* delete ':' */
 		    }
@@ -1638,14 +1595,6 @@ getcmdline(firstc, count, indent)
 		goto cmdline_not_changed;
 #endif /* FEAT_DIGRAPHS */
 
-#ifdef FEAT_RIGHTLEFT
-	case Ctrl__:	    /* CTRL-_: switch language mode */
-		if (!p_ari)
-		    break;
-		    cmd_hkmap = !cmd_hkmap;
-		goto cmdline_not_changed;
-#endif
-
 	default:
 #ifdef UNIX
 		if (c == intr_char)
@@ -1829,24 +1778,9 @@ cmdline_changed:
 	;
 #endif
 
-#ifdef FEAT_RIGHTLEFT
-	if (cmdmsg_rl
-		)
-	    /* Always redraw the whole command line to fix shaping and
-	     * right-left typing.  Not efficient, but it works.
-	     * Do it only when there are no characters left to read
-	     * to avoid useless intermediate redraws. */
-	    if (vpeekc() == NUL)
-		redrawcmd();
-#endif
     }
 
 returncmd:
-
-#ifdef FEAT_RIGHTLEFT
-    cmdmsg_rl = FALSE;
-#endif
-
 
     ExpandCleanup(&xpc);
     ccline.xpc = NULL;
@@ -3110,16 +3044,6 @@ cursorcmd()
     if (cmd_silent)
 	return;
 
-#ifdef FEAT_RIGHTLEFT
-    if (cmdmsg_rl)
-    {
-	msg_row = cmdline_row  + (ccline.cmdspos / (int)(Columns - 1));
-	msg_col = (int)Columns - (ccline.cmdspos % (int)(Columns - 1)) - 1;
-	if (msg_row <= 0)
-	    msg_row = Rows - 1;
-    }
-    else
-#endif
     {
 	msg_row = cmdline_row + (ccline.cmdspos / (int)Columns);
 	msg_col = ccline.cmdspos % (int)Columns;
@@ -3141,11 +3065,6 @@ gotocmdline(clr)
     int		    clr;
 {
     msg_start();
-#ifdef FEAT_RIGHTLEFT
-    if (cmdmsg_rl)
-	msg_col = Columns - 1;
-    else
-#endif
 	msg_col = 0;	    /* always start in column 0 */
     if (clr)		    /* clear the bottom line(s) */
 	msg_clr_eos();	    /* will reset clear_cmdline */
@@ -6128,9 +6047,6 @@ ex_window()
     int			save_restart_edit = restart_edit;
     int			save_State = State;
     int			save_exmode = exmode_active;
-#ifdef FEAT_RIGHTLEFT
-    int			save_cmdmsg_rl = cmdmsg_rl;
-#endif
 
     /* Can't do this recursively.  Can't do it when typing a password. */
     if (cmdwin_type != 0
@@ -6173,10 +6089,6 @@ ex_window()
 #ifdef FEAT_FOLDING
     curwin->w_p_fen = FALSE;
 #endif
-# ifdef FEAT_RIGHTLEFT
-    curwin->w_p_rl = cmdmsg_rl;
-    cmdmsg_rl = FALSE;
-# endif
     RESET_BINDING(curwin);
 
 # ifdef FEAT_AUTOCMD
@@ -6363,10 +6275,6 @@ ex_window()
 
     ga_clear(&winsizes);
     restart_edit = save_restart_edit;
-# ifdef FEAT_RIGHTLEFT
-    cmdmsg_rl = save_cmdmsg_rl;
-# endif
-
     State = save_State;
 # ifdef FEAT_MOUSE
     setmouse();

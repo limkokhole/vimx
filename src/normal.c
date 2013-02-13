@@ -887,30 +887,6 @@ getcount:
     }
 #endif
 
-#ifdef FEAT_RIGHTLEFT
-    if (curwin->w_p_rl && KeyTyped && !KeyStuffed
-					  && (nv_cmds[idx].cmd_flags & NV_RL))
-    {
-	/* Invert horizontal movements and operations.  Only when typed by the
-	 * user directly, not when the result of a mapping or "x" translated
-	 * to "dl". */
-	switch (ca.cmdchar)
-	{
-	    case 'l':	    ca.cmdchar = 'h'; break;
-	    case K_RIGHT:   ca.cmdchar = K_LEFT; break;
-	    case K_S_RIGHT: ca.cmdchar = K_S_LEFT; break;
-	    case K_C_RIGHT: ca.cmdchar = K_C_LEFT; break;
-	    case 'h':	    ca.cmdchar = 'l'; break;
-	    case K_LEFT:    ca.cmdchar = K_RIGHT; break;
-	    case K_S_LEFT:  ca.cmdchar = K_S_RIGHT; break;
-	    case K_C_LEFT:  ca.cmdchar = K_C_RIGHT; break;
-	    case '>':	    ca.cmdchar = '<'; break;
-	    case '<':	    ca.cmdchar = '>'; break;
-	}
-	idx = find_command(ca.cmdchar);
-    }
-#endif
-
     /*
      * Get an additional character if we need one.
      */
@@ -1058,11 +1034,6 @@ getcount:
 
 		/* adjust chars > 127, except after "tTfFr" commands */
 		LANGMAP_ADJUST(*cp, !lang);
-#ifdef FEAT_RIGHTLEFT
-		/* adjust Hebrew mapped char */
-		if (p_hkmap && lang && KeyTyped)
-		    *cp = hkmap(*cp);
-#endif
 	    }
 
 	    /*

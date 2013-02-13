@@ -100,9 +100,6 @@ static int	    saved_no_hlsearch = 0;
 #endif
 
 static char_u	    *mr_pattern = NULL;	/* pattern used by search_regcomp() */
-#ifdef FEAT_RIGHTLEFT
-static int	    mr_pattern_alloced = FALSE; /* mr_pattern was allocated */
-#endif
 
 #ifdef FEAT_FIND_ID
 /*
@@ -173,28 +170,6 @@ search_regcomp(pat, pat_save, pat_use, options, regmatch)
 	add_to_history(HIST_SEARCH, pat, TRUE, NUL);
 #endif
 
-#ifdef FEAT_RIGHTLEFT
-    if (mr_pattern_alloced)
-    {
-	vim_free(mr_pattern);
-	mr_pattern_alloced = FALSE;
-    }
-
-    if (curwin->w_p_rl && *curwin->w_p_rlc == 's')
-    {
-	char_u *rev_pattern;
-
-	rev_pattern = reverse_text(pat);
-	if (rev_pattern == NULL)
-	    mr_pattern = pat;	    /* out of memory, keep normal pattern. */
-	else
-	{
-	    mr_pattern = rev_pattern;
-	    mr_pattern_alloced = TRUE;
-	}
-    }
-    else
-#endif
 	mr_pattern = pat;
 
     /*
@@ -228,7 +203,7 @@ get_search_pat()
     return mr_pattern;
 }
 
-#if defined(FEAT_RIGHTLEFT) || defined(PROTO)
+#if defined(PROTO)
 /*
  * Reverse text into allocated memory.
  * Returns the allocated string, NULL when out of memory.
@@ -346,14 +321,6 @@ free_search_patterns()
     vim_free(spats[0].pat);
     vim_free(spats[1].pat);
 
-# ifdef FEAT_RIGHTLEFT
-    if (mr_pattern_alloced)
-    {
-	vim_free(mr_pattern);
-	mr_pattern_alloced = FALSE;
-	mr_pattern = NULL;
-    }
-# endif
 }
 #endif
 
@@ -1279,23 +1246,6 @@ do_search(oap, dirc, pat, count, options, tm)
 		msg_start();
 		trunc = msg_strtrunc(msgbuf, FALSE);
 
-#ifdef FEAT_RIGHTLEFT
-		/* The search pattern could be shown on the right in rightleft
-		 * mode, but the 'ruler' and 'showcmd' area use it too, thus
-		 * it would be blanked out again very soon.  Show it on the
-		 * left, but do reverse the text. */
-		if (curwin->w_p_rl && *curwin->w_p_rlc == 's')
-		{
-		    char_u *r;
-
-		    r = reverse_text(trunc != NULL ? trunc : msgbuf);
-		    if (r != NULL)
-		    {
-			vim_free(trunc);
-			trunc = r;
-		    }
-		}
-#endif
 		if (trunc != NULL)
 		{
 		    msg_outtrans(trunc);
@@ -1963,13 +1913,6 @@ findmatchlimit(oap, initc, flags, maxtravel)
 	}
     }
 
-#ifdef FEAT_RIGHTLEFT
-    /* This is just guessing: when 'rightleft' is set, search for a matching
-     * paren/brace in the other direction. */
-    if (curwin->w_p_rl && vim_strchr((char_u *)"()[]{}<>", initc) != NULL)
-	backwards = !backwards;
-#endif
-
     do_quotes = -1;
     start_in_quotes = MAYBE;
     clearpos(&match_pos);
@@ -2427,16 +2370,10 @@ showmatch(c)
     for (p = curbuf->b_p_mps; *p != NUL; ++p)
     {
 	if (PTR2CHAR(p) == c
-#ifdef FEAT_RIGHTLEFT
-		    && (curwin->w_p_rl ^ p_ri)
-#endif
 	   )
 	    break;
 	p += MB_PTR2LEN(p) + 1;
 	if (PTR2CHAR(p) == c
-#ifdef FEAT_RIGHTLEFT
-		&& !(curwin->w_p_rl ^ p_ri)
-#endif
 	   )
 	    break;
 	p += MB_PTR2LEN(p);

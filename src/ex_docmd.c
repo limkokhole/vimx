@@ -8520,9 +8520,6 @@ ex_operators(eap)
 
 	default:    /* CMD_rshift or CMD_lshift */
 	    if ((eap->cmdidx == CMD_rshift)
-#ifdef FEAT_RIGHTLEFT
-				    ^ curwin->w_p_rl
-#endif
 						    )
 		oa.op_type = OP_RSHIFT;
 	    else

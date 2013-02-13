@@ -4505,10 +4505,6 @@ im_correct_cursor(int num_move_back)
 
     if (State & NORMAL)
 	return;
-#  ifdef FEAT_RIGHTLEFT
-    if ((State & CMDLINE) == 0 && curwin != NULL && curwin->w_p_rl)
-	backkey[2] = 'r';
-#  endif
     for (; num_move_back > 0; --num_move_back)
 	add_to_input_buf(backkey, (int)sizeof(backkey));
 }

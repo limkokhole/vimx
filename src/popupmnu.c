@@ -181,11 +181,6 @@ redo:
     pum_kind_width = kind_width;
 
     /* Calculate column */
-#ifdef FEAT_RIGHTLEFT
-    if (curwin->w_p_rl)
-	col = W_WINCOL(curwin) + W_WIDTH(curwin) - curwin->w_wcol - 1;
-    else
-#endif
 	col = W_WINCOL(curwin) + curwin->w_wcol;
 
     /* if there are more items than room we need a scrollbar */
@@ -201,20 +196,11 @@ redo:
 	def_width = max_width;
 
     if (((col < Columns - PUM_DEF_WIDTH || col < Columns - max_width)
-#ifdef FEAT_RIGHTLEFT
-		&& !curwin->w_p_rl)
-	    || (curwin->w_p_rl && (col > PUM_DEF_WIDTH || col > max_width)
-#endif
        ))
     {
 	/* align pum column with "col" */
 	pum_col = col;
 
-#ifdef FEAT_RIGHTLEFT
-	if (curwin->w_p_rl)
-	    pum_width = pum_col - pum_scrollbar + 1;
-	else
-#endif
 	    pum_width = Columns - pum_col - pum_scrollbar;
 
 	if (pum_width > max_width + kind_width + extra_width + 1
@@ -228,11 +214,6 @@ redo:
     else if (Columns < def_width)
     {
 	/* not enough room, will use what we have */
-#ifdef FEAT_RIGHTLEFT
-	if (curwin->w_p_rl)
-	    pum_col = Columns - 1;
-	else
-#endif
 	    pum_col = 0;
 	pum_width = Columns - 1;
     }
@@ -240,11 +221,6 @@ redo:
     {
 	if (max_width > PUM_DEF_WIDTH)
 	    max_width = PUM_DEF_WIDTH;	/* truncate */
-#ifdef FEAT_RIGHTLEFT
-	if (curwin->w_p_rl)
-	    pum_col = max_width - 1;
-	else
-#endif
 	    pum_col = Columns - max_width;
 	pum_width = max_width - pum_scrollbar;
     }
@@ -298,14 +274,6 @@ pum_redraw()
 	attr = (idx == pum_selected) ? attr_select : attr_norm;
 
 	/* prepend a space if there is room */
-#ifdef FEAT_RIGHTLEFT
-	if (curwin->w_p_rl)
-	{
-	    if (pum_col < W_WINCOL(curwin) + W_WIDTH(curwin) - 1)
-		screen_putchar(' ', row, pum_col + 1, attr);
-	}
-	else
-#endif
 	    if (pum_col > 0)
 		screen_putchar(' ', row, pum_col - 1, attr);
 
@@ -339,49 +307,6 @@ pum_redraw()
 			*p = NUL;
 			st = transstr(s);
 			*p = saved;
-#ifdef FEAT_RIGHTLEFT
-			if (curwin->w_p_rl)
-			{
-			    if (st != NULL)
-			    {
-				char_u	*rt = reverse_text(st);
-
-				if (rt != NULL)
-				{
-				    char_u	*rt_start = rt;
-				    int		size;
-
-				    size = vim_strsize(rt);
-				    if (size > pum_width)
-				    {
-					do
-					{
-					    size -= has_mbyte
-						    ? (*mb_ptr2cells)(rt) : 1;
-					    mb_ptr_adv(rt);
-					} while (size > pum_width);
-
-					if (size < pum_width)
-					{
-					    /* Most left character requires
-					     * 2-cells but only 1 cell is
-					     * available on screen.  Put a
-					     * '<' on the left of the pum
-					     * item */
-					    *(--rt) = '<';
-					    size++;
-					}
-				    }
-				    screen_puts_len(rt, (int)STRLEN(rt),
-						   row, col - size + 1, attr);
-				    vim_free(rt_start);
-				}
-				vim_free(st);
-			    }
-			    col -= width;
-			}
-			else
-#endif
 			{
 			    if (st != NULL)
 			    {
@@ -396,15 +321,6 @@ pum_redraw()
 			    break;
 
 			/* Display two spaces for a Tab. */
-#ifdef FEAT_RIGHTLEFT
-			if (curwin->w_p_rl)
-			{
-			    screen_puts_len((char_u *)"  ", 2, row, col - 1,
-									attr);
-			    col -= 2;
-			}
-			else
-#endif
 			{
 			    screen_puts_len((char_u *)"  ", 2, row, col, attr);
 			    col += 2;
@@ -429,15 +345,6 @@ pum_redraw()
 					  && pum_array[idx].pum_extra == NULL)
 		    || pum_base_width + n >= pum_width)
 		break;
-#ifdef FEAT_RIGHTLEFT
-	    if (curwin->w_p_rl)
-	    {
-		screen_fill(row, row + 1, pum_col - pum_base_width - n + 1,
-						    col + 1, ' ', ' ', attr);
-		col = pum_col - pum_base_width - n + 1;
-	    }
-	    else
-#endif
 	    {
 		screen_fill(row, row + 1, col, pum_col + pum_base_width + n,
 							      ' ', ' ', attr);
@@ -446,23 +353,10 @@ pum_redraw()
 	    totwidth = pum_base_width + n;
 	}
 
-#ifdef FEAT_RIGHTLEFT
-	if (curwin->w_p_rl)
-	    screen_fill(row, row + 1, pum_col - pum_width + 1, col + 1, ' ',
-								    ' ', attr);
-	else
-#endif
 	    screen_fill(row, row + 1, col, pum_col + pum_width, ' ', ' ',
 									attr);
 	if (pum_scrollbar > 0)
 	{
-#ifdef FEAT_RIGHTLEFT
-	    if (curwin->w_p_rl)
-		screen_putchar(' ', row, pum_col - pum_width,
-			i >= thumb_pos && i < thumb_pos + thumb_heigth
-						  ? attr_thumb : attr_scroll);
-	    else
-#endif
 		screen_putchar(' ', row, pum_col + pum_width,
 			i >= thumb_pos && i < thumb_pos + thumb_heigth
 						  ? attr_thumb : attr_scroll);

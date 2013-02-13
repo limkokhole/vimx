@@ -1173,9 +1173,6 @@ msg_start()
     {
 	msg_row = cmdline_row;
 	msg_col =
-#ifdef FEAT_RIGHTLEFT
-	    cmdmsg_rl ? Columns - 1 :
-#endif
 	    0;
     }
     else if (msg_didout)		    /* start message on next line */
@@ -1757,9 +1754,6 @@ screen_puts_mbyte(s, l, attr)
     msg_didout = TRUE;		/* remember that line is not empty */
     cw = (*mb_ptr2cells)(s);
     if (cw > 1 && (
-#ifdef FEAT_RIGHTLEFT
-		cmdmsg_rl ? msg_col <= 1 :
-#endif
 		msg_col == Columns - 1))
     {
 	/* Doesn't fit, print a highlighted '>' to fill it up. */
@@ -1768,18 +1762,6 @@ screen_puts_mbyte(s, l, attr)
     }
 
     screen_puts_len(s, l, msg_row, msg_col, attr);
-#ifdef FEAT_RIGHTLEFT
-    if (cmdmsg_rl)
-    {
-	msg_col -= cw;
-	if (msg_col == 0)
-	{
-	    msg_col = Columns;
-	    ++msg_row;
-	}
-    }
-    else
-#endif
     {
 	msg_col += cw;
 	if (msg_col >= Columns)
@@ -1937,17 +1919,6 @@ msg_puts_display(str, maxlen, attr, recurse)
 	 * - When outputting a character in the last column.
 	 */
 	if (!recurse && msg_row >= Rows - 1 && (*s == '\n' || (
-#ifdef FEAT_RIGHTLEFT
-		    cmdmsg_rl
-		    ? (
-			msg_col <= 1
-			|| (*s == TAB && msg_col <= 7)
-# ifdef FEAT_MBYTE
-			|| (has_mbyte && (*mb_ptr2cells)(s) > 1 && msg_col <= 2)
-# endif
-		      )
-		    :
-#endif
 		      (msg_col + t_col >= Columns - 1
 		       || (*s == TAB && msg_col + t_col >= ((Columns - 1) & ~7))
 # ifdef FEAT_MBYTE
@@ -1978,9 +1949,6 @@ msg_puts_display(str, maxlen, attr, recurse)
 
 	    /* Display char in last column before showing more-prompt. */
 	    if (*s >= ' '
-#ifdef FEAT_RIGHTLEFT
-		    && !cmdmsg_rl
-#endif
 	       )
 	    {
 #ifdef FEAT_MBYTE
@@ -2057,11 +2025,6 @@ msg_puts_display(str, maxlen, attr, recurse)
 	if (*s == '\n')		    /* go to next line */
 	{
 	    msg_didout = FALSE;	    /* remember that line is empty */
-#ifdef FEAT_RIGHTLEFT
-	    if (cmdmsg_rl)
-		msg_col = Columns - 1;
-	    else
-#endif
 		msg_col = 0;
 	    if (++msg_row >= Rows)  /* safety check */
 		msg_row = Rows - 1;
@@ -2104,28 +2067,6 @@ msg_puts_display(str, maxlen, attr, recurse)
 	    /* When drawing from right to left or when a double-wide character
 	     * doesn't fit, draw a single character here.  Otherwise collect
 	     * characters and draw them all at once later. */
-#if defined(FEAT_RIGHTLEFT) || defined(FEAT_MBYTE)
-	    if (
-# ifdef FEAT_RIGHTLEFT
-		    cmdmsg_rl
-#  ifdef FEAT_MBYTE
-		    ||
-#  endif
-# endif
-# ifdef FEAT_MBYTE
-		    (cw > 1 && msg_col + t_col >= Columns - 1)
-# endif
-		    )
-	    {
-# ifdef FEAT_MBYTE
-		if (l > 1)
-		    s = screen_puts_mbyte(s, l, attr) - 1;
-		else
-# endif
-		    msg_screen_putchar(*s, attr);
-	    }
-	    else
-#endif
 	    {
 		/* postpone this character until later */
 		if (t_col == 0)
@@ -2468,16 +2409,6 @@ msg_puts_printf(str, maxlen)
 	}
 
 	/* primitive way to compute the current column */
-#ifdef FEAT_RIGHTLEFT
-	if (cmdmsg_rl)
-	{
-	    if (*s == '\r' || *s == '\n')
-		msg_col = Columns - 1;
-	    else
-		--msg_col;
-	}
-	else
-#endif
 	{
 	    if (*s == '\r' || *s == '\n')
 		msg_col = 0;
@@ -2749,11 +2680,6 @@ do_more_prompt(typed_char)
 	msg_row = Rows - 1;
 	msg_col = 0;
     }
-#ifdef FEAT_RIGHTLEFT
-    else if (cmdmsg_rl)
-	msg_col = Columns - 1;
-#endif
-
 #ifdef FEAT_CON_DIALOG
     return retval;
 #else
@@ -2888,17 +2814,6 @@ msg_screen_putchar(c, attr)
 {
     msg_didout = TRUE;		/* remember that line is not empty */
     screen_putchar(c, msg_row, msg_col, attr);
-#ifdef FEAT_RIGHTLEFT
-    if (cmdmsg_rl)
-    {
-	if (--msg_col == 0)
-	{
-	    msg_col = Columns;
-	    ++msg_row;
-	}
-    }
-    else
-#endif
     {
 	if (++msg_col >= Columns)
 	{
@@ -3012,14 +2927,6 @@ msg_clr_eos_force()
     }
     else
     {
-#ifdef FEAT_RIGHTLEFT
-	if (cmdmsg_rl)
-	{
-	    screen_fill(msg_row, msg_row + 1, 0, msg_col + 1, ' ', ' ', 0);
-	    screen_fill(msg_row + 1, (int)Rows, 0, (int)Columns, ' ', ' ', 0);
-	}
-	else
-#endif
 	{
 	    screen_fill(msg_row, msg_row + 1, msg_col, (int)Columns,
 								 ' ', ' ', 0);
@@ -3294,12 +3201,6 @@ msg_advance(col)
     }
     if (col >= Columns)		/* not enough room */
 	col = Columns - 1;
-#ifdef FEAT_RIGHTLEFT
-    if (cmdmsg_rl)
-	while (msg_col > Columns - col)
-	    msg_putchar(' ');
-    else
-#endif
 	while (msg_col < col)
 	    msg_putchar(' ');
 }

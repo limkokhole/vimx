@@ -494,11 +494,6 @@ static char *(features[]) =
 #else
 	"-reltime",
 #endif
-#ifdef FEAT_RIGHTLEFT
-	"+rightleft",
-#else
-	"-rightleft",
-#endif
 #ifdef FEAT_RUBY
 # ifdef DYNAMIC_RUBY
 	"+ruby/dyn",

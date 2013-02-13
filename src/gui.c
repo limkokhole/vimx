@@ -1214,9 +1214,6 @@ gui_update_cursor(force, clear_selection)
 	}
 	else
 	{
-#if defined(FEAT_MBYTE) && defined(FEAT_RIGHTLEFT)
-	    int	    col_off = FALSE;
-#endif
 	    /*
 	     * First draw the partial cursor, then overwrite with the text
 	     * character, using a transparent background.
@@ -1240,24 +1237,9 @@ gui_update_cursor(force, clear_selection)
 		/* Double wide character. */
 		if (shape_table[idx].shape != SHAPE_VER)
 		    cur_width += gui.char_width;
-# ifdef FEAT_RIGHTLEFT
-		if (CURSOR_BAR_RIGHT)
-		{
-		    /* gui.col points to the left halve of the character but
-		     * the vertical line needs to be on the right halve.
-		     * A double-wide horizontal line is also drawn from the
-		     * right halve in gui_mch_draw_part_cursor(). */
-		    col_off = TRUE;
-		    ++gui.col;
-		}
-# endif
 	    }
 #endif
 	    gui_mch_draw_part_cursor(cur_width, cur_height, cbg);
-#if defined(FEAT_MBYTE) && defined(FEAT_RIGHTLEFT)
-	    if (col_off)
-		--gui.col;
-#endif
 
 #ifndef FEAT_GUI_MSWIN	    /* doesn't seem to work for MSWindows */
 	    gui.highlight_mask = ScreenAttrs[LineOffset[gui.row] + gui.col];
@@ -3920,15 +3902,6 @@ gui_drag_scrollbar(sb, value, still_dragging)
 	return;
 #endif
 
-#ifdef FEAT_RIGHTLEFT
-    if (sb->wp == NULL && curwin->w_p_rl)
-    {
-	value = sb->max + 1 - sb->size - value;
-	if (value < 0)
-	    value = 0;
-    }
-#endif
-
     if (sb->wp != NULL)		/* vertical scrollbar */
     {
 	sb_num = 0;
@@ -4577,17 +4550,6 @@ gui_update_horiz_scrollbar(force)
 	value = max - size + 1;	    /* limit the value to allowable range */
 #endif
 
-#ifdef FEAT_RIGHTLEFT
-    if (curwin->w_p_rl)
-    {
-	value = max + 1 - size - value;
-	if (value < 0)
-	{
-	    size += value;
-	    value = 0;
-	}
-    }
-#endif
     if (!force && value == gui.bottom_sbar.value && size == gui.bottom_sbar.size
 						&& max == gui.bottom_sbar.max)
 	return;

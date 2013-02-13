@@ -181,12 +181,6 @@ typedef struct
     int		wo_pvw;
 # define w_p_pvw w_onebuf_opt.wo_pvw	/* 'previewwindow' */
 #endif
-#ifdef FEAT_RIGHTLEFT
-    int		wo_rl;
-# define w_p_rl w_onebuf_opt.wo_rl	/* 'rightleft' */
-    char_u	*wo_rlc;
-# define w_p_rlc w_onebuf_opt.wo_rlc	/* 'rightleftcmd' */
-#endif
     long	wo_scr;
 #define w_p_scr w_onebuf_opt.wo_scr	/* 'scroll' */
 #ifdef FEAT_SPELL

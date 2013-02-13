@@ -1886,7 +1886,7 @@ ui_cursor_shape()
 }
 #endif
 
-#if defined(FEAT_CLIPBOARD) || defined(FEAT_GUI) || defined(FEAT_RIGHTLEFT) \
+#if defined(FEAT_CLIPBOARD) || defined(FEAT_GUI) \
 	|| defined(FEAT_MBYTE) || defined(PROTO)
 /*
  * Check bounds for column number
@@ -2656,9 +2656,6 @@ retnomove:
 # endif
 # ifdef FEAT_FOLDING
 			&& (
-#  ifdef FEAT_RIGHTLEFT
-			    wp->w_p_rl ? col < W_WIDTH(wp) - wp->w_p_fdc :
-#  endif
 			    col >= wp->w_p_fdc
 #  ifdef FEAT_CMDWIN
 				  + (cmdwin_type == 0 && wp == curwin ? 0 : 1)
@@ -2877,9 +2874,6 @@ retnomove:
 #ifdef FEAT_FOLDING
     /* Check for position outside of the fold column. */
     if (
-# ifdef FEAT_RIGHTLEFT
-	    curwin->w_p_rl ? col < W_WIDTH(curwin) - curwin->w_p_fdc :
-# endif
 	    col >= curwin->w_p_fdc
 #  ifdef FEAT_CMDWIN
 				+ (cmdwin_type == 0 ? 0 : 1)
@@ -2952,11 +2946,6 @@ mouse_comp_pos(win, rowp, colp, lnump)
     int		retval = FALSE;
     int		off;
     int		count;
-
-#ifdef FEAT_RIGHTLEFT
-    if (win->w_p_rl)
-	col = W_WIDTH(win) - 1 - col;
-#endif
 
     lnum = win->w_topline;
 

@@ -241,11 +241,6 @@
 
 # define UTF_COMPOSINGLIKE(p1, p2)  utf_iscomposing(utf_ptr2char(p2))
 
-#ifdef FEAT_RIGHTLEFT
-    /* Whether to draw the vertical bar on the right side of the cell. */
-# define CURSOR_BAR_RIGHT (curwin->w_p_rl && (!(State & CMDLINE) || cmdmsg_rl))
-#endif
-
 /*
  * mb_ptr_adv(): advance a pointer to the next character, taking care of
  * multi-byte characters if needed.

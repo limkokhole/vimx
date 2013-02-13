@@ -307,9 +307,6 @@
  * The following are actual variables for the options
  */
 
-#ifdef FEAT_RIGHTLEFT
-EXTERN long	p_aleph;	/* 'aleph' */
-#endif
 #ifdef FEAT_AUTOCHDIR
 EXTERN int	p_acd;		/* 'autochdir' */
 #endif
@@ -539,10 +536,6 @@ EXTERN int	p_hid;		/* 'hidden' */
 EXTERN char_u	*p_hl;		/* 'highlight' */
 EXTERN int	p_hls;		/* 'hlsearch' */
 EXTERN long	p_hi;		/* 'history' */
-#ifdef FEAT_RIGHTLEFT
-EXTERN int	p_hkmap;	/* 'hkmap' */
-EXTERN int	p_hkmapp;	/* 'hkmapp' */
-#endif
 #ifdef FEAT_TITLE
 EXTERN int	p_icon;		/* 'icon' */
 EXTERN char_u	*p_iconstring;	/* 'iconstring' */
@@ -651,10 +644,6 @@ EXTERN long	p_pvh;		/* 'previewheight' */
 #endif
 #ifdef WIN3264
 EXTERN int	p_rs;		/* 'restorescreen' */
-#endif
-#ifdef FEAT_RIGHTLEFT
-EXTERN int	p_ari;		/* 'allowrevins' */
-EXTERN int	p_ri;		/* 'revins' */
 #endif
 #ifdef FEAT_CMDL_INFO
 EXTERN int	p_ru;		/* 'ruler' */
@@ -1063,10 +1052,6 @@ enum
 #endif
 #if defined(FEAT_WINDOWS) && defined(FEAT_QUICKFIX)
     , WV_PVW
-#endif
-#ifdef FEAT_RIGHTLEFT
-    , WV_RL
-    , WV_RLC
 #endif
 #ifdef FEAT_SCROLLBIND
     , WV_SCBIND

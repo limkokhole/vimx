@@ -4374,12 +4374,6 @@ gui_mch_draw_part_cursor(int w, int h, guicolor_T color)
 {
     Rect rc;
 
-#ifdef FEAT_RIGHTLEFT
-    /* vertical line should be on the right of current point */
-    if (CURSOR_BAR_RIGHT)
-	rc.left = FILL_X(gui.col + 1) - w;
-    else
-#endif
 	rc.left = FILL_X(gui.col);
     rc.top = FILL_Y(gui.row) + gui.char_height - h;
     rc.right = rc.left + w;

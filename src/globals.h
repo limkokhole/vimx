@@ -148,9 +148,6 @@ EXTERN int	compl_cont_status INIT(= 0);
  * Functions for putting characters in the command line,
  * while keeping ScreenLines[] updated.
  */
-#ifdef FEAT_RIGHTLEFT
-EXTERN int	cmdmsg_rl INIT(= FALSE);    /* cmdline is drawn right to left */
-#endif
 EXTERN int	msg_col;
 EXTERN int	msg_row;
 EXTERN int	msg_scrolled;	/* Number of screen lines that windows have
@@ -1448,9 +1445,6 @@ EXTERN char_u e_noabbr[]	INIT(= N_("E24: No such abbreviation"));
 EXTERN char_u e_nobang[]	INIT(= N_("E477: No ! allowed"));
 #ifndef FEAT_GUI
 EXTERN char_u e_nogvim[]	INIT(= N_("E25: GUI cannot be used: Not enabled at compile time"));
-#endif
-#ifndef FEAT_RIGHTLEFT
-EXTERN char_u e_nohebrew[]	INIT(= N_("E26: Hebrew cannot be used: Not enabled at compile time\n"));
 #endif
 #ifndef FEAT_ARABIC
 EXTERN char_u e_noarabic[]	INIT(= N_("E800: Arabic cannot be used: Not enabled at compile time\n"));

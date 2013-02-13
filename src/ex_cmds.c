@@ -149,17 +149,6 @@ ex_align(eap)
     int		has_tab;
     int		width;
 
-#ifdef FEAT_RIGHTLEFT
-    if (curwin->w_p_rl)
-    {
-	/* switch left and right aligning */
-	if (eap->cmdidx == CMD_right)
-	    eap->cmdidx = CMD_left;
-	else if (eap->cmdidx == CMD_left)
-	    eap->cmdidx = CMD_right;
-    }
-#endif
-
     width = atoi((char *)eap->arg);
     save_curpos = curwin->w_cursor;
     if (eap->cmdidx == CMD_left)    /* width is used for new indent */
@@ -3501,9 +3490,6 @@ do_ecmd(fnum, ffname, sfname, eap, newlnum, flags, oldwin)
 	curwin->w_p_nu = 0;		/* no line numbers */
 	curwin->w_p_rnu = 0;		/* no relative line numbers */
 	RESET_BINDING(curwin);		/* no scroll or cursor binding */
-#ifdef FEAT_RIGHTLEFT
-	curwin->w_p_rl  = FALSE;	/* help window is left-to-right */
-#endif
 #ifdef FEAT_FOLDING
 	curwin->w_p_fen = FALSE;	/* No folding in the help window */
 #endif
