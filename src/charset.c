@@ -93,13 +93,6 @@ buf_init_chartab(buf, global)
 	while (c <= '~')
 #endif
 	    chartab[c++] = 1 + CT_PRINT_CHAR;
-#ifdef FEAT_FKMAP
-	if (p_altkeymap)
-	{
-	    while (c < YE)
-		chartab[c++] = 1 + CT_PRINT_CHAR;
-	}
-#endif
 	while (c < 256)
 	{
 #ifdef FEAT_MBYTE
@@ -224,9 +217,6 @@ buf_init_chartab(buf, global)
 		 * work properly when 'encoding' is "latin1" and the locale is
 		 * "C".  */
 		if (!do_isalpha || MB_ISLOWER(c) || MB_ISUPPER(c)
-#ifdef FEAT_FKMAP
-			|| (p_altkeymap && (F_isalpha(c) || F_isdigit(c)))
-#endif
 			    )
 		{
 		    if (i == 0)			/* (re)set ID flag */
@@ -241,10 +231,6 @@ buf_init_chartab(buf, global)
 			if ((c < ' '
 #ifndef EBCDIC
 				    || c > '~'
-#endif
-#ifdef FEAT_FKMAP
-				    || (p_altkeymap
-					&& (F_isalpha(c) || F_isdigit(c)))
 #endif
 			    )
 #ifdef FEAT_MBYTE
@@ -560,9 +546,6 @@ transchar(c)
 		    (c >= 64 && c < 255)
 #else
 		    (c >= ' ' && c <= '~')
-#endif
-#ifdef FEAT_FKMAP
-			|| F_ischar(c)
 #endif
 		)) || (c < 256 && vim_isprintc_strict(c)))
     {

@@ -9490,10 +9490,6 @@ showmode()
 #ifdef FEAT_RIGHTLEFT
 		if (p_hkmap)
 		    MSG_PUTS_ATTR(_(" Hebrew"), attr);
-# ifdef FEAT_FKMAP
-		if (p_fkmap)
-		    MSG_PUTS_ATTR(farsi_text_5, attr);
-# endif
 #endif
 #ifdef FEAT_KEYMAP
 		if (State & LANGMAP)

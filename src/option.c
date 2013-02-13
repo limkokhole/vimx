@@ -513,13 +513,6 @@ static struct vimoption
 			    (char_u *)NULL, PV_NONE,
 #endif
 			    {(char_u *)FALSE, (char_u *)0L} SCRIPTID_INIT},
-    {"altkeymap",   "akm",  P_BOOL|P_VI_DEF,
-#ifdef FEAT_FKMAP
-			    (char_u *)&p_altkeymap, PV_NONE,
-#else
-			    (char_u *)NULL, PV_NONE,
-#endif
-			    {(char_u *)FALSE, (char_u *)0L} SCRIPTID_INIT},
     {"ambiwidth",  "ambw",  P_STRING|P_VI_DEF|P_RCLR,
 #if defined(FEAT_MBYTE)
 			    (char_u *)&p_ambw, PV_NONE,
@@ -1115,13 +1108,6 @@ static struct vimoption
 			    {(char_u *)"", (char_u *)0L}
 #endif
 			    SCRIPTID_INIT},
-    {"fkmap",	    "fk",   P_BOOL|P_VI_DEF,
-#ifdef FEAT_FKMAP
-			    (char_u *)&p_fkmap, PV_NONE,
-#else
-			    (char_u *)NULL, PV_NONE,
-#endif
-			    {(char_u *)FALSE, (char_u *)0L} SCRIPTID_INIT},
     {"flash",	    "fl",   P_BOOL|P_VI_DEF,
 			    (char_u *)NULL, PV_NONE,
 			    {(char_u *)FALSE, (char_u *)0L} SCRIPTID_INIT},
@@ -7934,60 +7920,6 @@ set_bool_option(opt_idx, varp, value, opt_flags)
     }
 #endif
 
-#ifdef FEAT_FKMAP
-    else if ((int *)varp == &p_altkeymap)
-    {
-	if (old_value != p_altkeymap)
-	{
-	    if (!p_altkeymap)
-	    {
-		p_hkmap = p_fkmap;
-		p_fkmap = 0;
-	    }
-	    else
-	    {
-		p_fkmap = p_hkmap;
-		p_hkmap = 0;
-	    }
-	    (void)init_chartab();
-	}
-    }
-
-    /*
-     * In case some second language keymapping options have changed, check
-     * and correct the setting in a consistent way.
-     */
-
-    /*
-     * If hkmap or fkmap are set, reset Arabic keymapping.
-     */
-    if ((p_hkmap || p_fkmap) && p_altkeymap)
-    {
-	p_altkeymap = p_fkmap;
-	(void)init_chartab();
-    }
-
-    /*
-     * If hkmap set, reset Farsi keymapping.
-     */
-    if (p_hkmap && p_altkeymap)
-    {
-	p_altkeymap = 0;
-	p_fkmap = 0;
-	(void)init_chartab();
-    }
-
-    /*
-     * If fkmap set, reset Hebrew keymapping.
-     */
-    if (p_fkmap && !p_altkeymap)
-    {
-	p_altkeymap = 1;
-	p_hkmap = 0;
-	(void)init_chartab();
-    }
-#endif
-
     /*
      * End of handling side effects for bool options.
      */
@@ -9715,10 +9647,6 @@ win_copy_options(wp_from, wp_to)
     copy_winopt(&wp_from->w_onebuf_opt, &wp_to->w_onebuf_opt);
     copy_winopt(&wp_from->w_allbuf_opt, &wp_to->w_allbuf_opt);
 # ifdef FEAT_RIGHTLEFT
-#  ifdef FEAT_FKMAP
-    /* Is this right? */
-    wp_to->w_farsi = wp_from->w_farsi;
-#  endif
 # endif
 }
 #endif

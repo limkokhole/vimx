@@ -12159,9 +12159,6 @@ f_has(argvars, rettv)
 #ifdef FEAT_SEARCH_EXTRA
 	"extra_search",
 #endif
-#ifdef FEAT_FKMAP
-	"farsi",
-#endif
 #ifdef FEAT_SEARCHPATH
 	"file_in_path",
 #endif

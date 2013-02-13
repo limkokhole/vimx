@@ -1346,11 +1346,6 @@ do_search(oap, dirc, pat, count, options, tm)
 	    }
 	}
 
-#ifdef FEAT_FKMAP	/* when in Farsi mode, reverse the character flow */
-	if (p_altkeymap && curwin->w_p_rl)
-	     lrFswap(searchstr,0);
-#endif
-
 	c = searchit(curwin, curbuf, &pos, dirc == '/' ? FORWARD : BACKWARD,
 		searchstr, count, spats[0].off.end + (options &
 		       (SEARCH_KEEP + SEARCH_PEEK + SEARCH_HIS
@@ -2806,10 +2801,6 @@ cls()
     int	    c;
 
     c = gchar_cursor();
-#ifdef FEAT_FKMAP	/* when 'akm' (Farsi mode), take care of Farsi blank */
-    if (p_altkeymap && c == F_BLANK)
-	return 0;
-#endif
     if (c == ' ' || c == '\t' || c == NUL)
 	return 0;
 #ifdef FEAT_MBYTE

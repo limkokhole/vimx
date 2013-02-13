@@ -207,11 +207,6 @@ static char *(features[]) =
 #else
 	"-extra_search",
 #endif
-#ifdef FEAT_FKMAP
-	"+farsi",
-#else
-	"-farsi",
-#endif
 #ifdef FEAT_SEARCHPATH
 	"+file_in_path",
 #else

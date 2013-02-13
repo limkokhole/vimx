@@ -1452,9 +1452,6 @@ EXTERN char_u e_nogvim[]	INIT(= N_("E25: GUI cannot be used: Not enabled at comp
 #ifndef FEAT_RIGHTLEFT
 EXTERN char_u e_nohebrew[]	INIT(= N_("E26: Hebrew cannot be used: Not enabled at compile time\n"));
 #endif
-#ifndef FEAT_FKMAP
-EXTERN char_u e_nofarsi[]	INIT(= N_("E27: Farsi cannot be used: Not enabled at compile time\n"));
-#endif
 #ifndef FEAT_ARABIC
 EXTERN char_u e_noarabic[]	INIT(= N_("E800: Arabic cannot be used: Not enabled at compile time\n"));
 #endif
@@ -1604,10 +1601,3 @@ EXTERN FILE *time_fd INIT(= NULL);  /* where to write startup timing */
  */
 EXTERN int ignored;
 EXTERN char *ignoredp;
-
-/*
- * Optional Farsi support.  Include it here, so EXTERN and INIT are defined.
- */
-#ifdef FEAT_FKMAP
-# include "farsi.h"
-#endif

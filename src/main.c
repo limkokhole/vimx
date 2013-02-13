@@ -649,14 +649,6 @@ vim_main2(int argc UNUSED, char **argv UNUSED)
     if (params.no_swap_file)
 	p_uc = 0;
 
-#ifdef FEAT_FKMAP
-    if (curwin->w_p_rl && p_altkeymap)
-    {
-	p_hkmap = FALSE;	/* Reset the Hebrew keymap mode */
-	p_fkmap = TRUE;		/* Set the Farsi keymap mode */
-    }
-#endif
-
 #ifdef FEAT_GUI
     if (gui.starting)
     {
@@ -1928,16 +1920,6 @@ command_line_scan(parmp)
 
 	    case 'g':		/* "-g" start GUI */
 		main_start_gui();
-		break;
-
-	    case 'F':		/* "-F" start in Farsi mode: rl + fkmap set */
-#ifdef FEAT_FKMAP
-		p_fkmap = TRUE;
-		set_option_value((char_u *)"rl", 1L, NULL, 0);
-#else
-		mch_errmsg(_(e_nofarsi));
-		mch_exit(2);
-#endif
 		break;
 
 	    case 'h':		/* "-h" give help message */
@@ -3232,9 +3214,6 @@ usage()
 #ifdef FEAT_RIGHTLEFT
     main_msg(_("-H\t\t\tStart in Hebrew mode"));
 #endif
-#ifdef FEAT_FKMAP
-    main_msg(_("-F\t\t\tStart in Farsi mode"));
-#endif
     main_msg(_("-T <terminal>\tSet terminal type to <terminal>"));
     main_msg(_("-u <vimrc>\t\tUse <vimrc> instead of any .vimrc"));
 #ifdef FEAT_GUI
@@ -4079,11 +4058,4 @@ serverConvert(client_enc, data, tofree)
 # endif
     return res;
 }
-#endif
-
-/*
- * When FEAT_FKMAP is defined, also compile the Farsi source code.
- */
-#if defined(FEAT_FKMAP) || defined(PROTO)
-# include "farsi.c"
 #endif

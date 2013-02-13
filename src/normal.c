@@ -437,10 +437,6 @@ static const struct nv_cmd
     {K_TABLINE, nv_tabline,	0,			0},
     {K_TABMENU, nv_tabmenu,	0,			0},
 #endif
-#ifdef FEAT_FKMAP
-    {K_F8,	farsi_fkey,	0,			0},
-    {K_F9,	farsi_fkey,	0,			0},
-#endif
 #ifdef FEAT_SNIFF
     {K_SNIFF,	nv_sniff,	0,			0},
 #endif
@@ -1066,11 +1062,6 @@ getcount:
 		/* adjust Hebrew mapped char */
 		if (p_hkmap && lang && KeyTyped)
 		    *cp = hkmap(*cp);
-# ifdef FEAT_FKMAP
-		/* adjust Farsi mapped char */
-		if (p_fkmap && lang && KeyTyped)
-		    *cp = fkmap(*cp);
-# endif
 #endif
 	    }
 

@@ -77,9 +77,6 @@ static int	calc_hist_idx __ARGS((int histype, int num));
 static int	cmd_hkmap = 0;	/* Hebrew mapping during command line */
 #endif
 
-#ifdef FEAT_FKMAP
-static int	cmd_fkmap = 0;	/* Farsi mapping during command line */
-#endif
 
 static int	cmdline_charsize __ARGS((int idx));
 static void	set_cmdspos __ARGS((void));
@@ -366,10 +363,6 @@ getcmdline(firstc, count, indent)
 #ifdef FEAT_RIGHTLEFT
 	    if (cmd_hkmap)
 		c = hkmap(c);
-# ifdef FEAT_FKMAP
-	    if (cmd_fkmap)
-		c = cmdl_fkmap(c);
-# endif
 	    if (cmdmsg_rl && !KeyStuffed)
 	    {
 		/* Invert horizontal movements and operations.  Only when
@@ -927,10 +920,6 @@ getcmdline(firstc, count, indent)
 	case K_DEL:
 	case K_KDEL:
 	case Ctrl_W:
-#ifdef FEAT_FKMAP
-		if (cmd_fkmap && c == K_BS)
-		    c = K_DEL;
-#endif
 		if (c == K_KDEL)
 		    c = K_DEL;
 
@@ -1019,13 +1008,6 @@ getcmdline(firstc, count, indent)
 
 	case K_INS:
 	case K_KINS:
-#ifdef FEAT_FKMAP
-		/* if Farsi mode set, we are in reverse insert mode -
-		   Do not change the mode */
-		if (cmd_fkmap)
-		    beep_flush();
-		else
-#endif
 		ccline.overstrike = !ccline.overstrike;
 #ifdef CURSOR_SHAPE
 		ui_cursor_shape();	/* may show different cursor shape */
@@ -1660,15 +1642,6 @@ getcmdline(firstc, count, indent)
 	case Ctrl__:	    /* CTRL-_: switch language mode */
 		if (!p_ari)
 		    break;
-#ifdef FEAT_FKMAP
-		if (p_altkeymap)
-		{
-		    cmd_fkmap = !cmd_fkmap;
-		    if (cmd_fkmap)	/* in Farsi always in Insert mode */
-			ccline.overstrike = FALSE;
-		}
-		else			    /* Hebrew is default */
-#endif
 		    cmd_hkmap = !cmd_hkmap;
 		goto cmdline_not_changed;
 #endif
@@ -1874,9 +1847,6 @@ returncmd:
     cmdmsg_rl = FALSE;
 #endif
 
-#ifdef FEAT_FKMAP
-    cmd_fkmap = 0;
-#endif
 
     ExpandCleanup(&xpc);
     ccline.xpc = NULL;
@@ -2795,13 +2765,6 @@ put_on_cmdline(str, len, redraw)
 		msg_clr_eos();
 	    msg_no_more = FALSE;
 	}
-#ifdef FEAT_FKMAP
-	/*
-	 * If we are in Farsi command mode, the character input must be in
-	 * Insert mode. So do not advance the cmdpos.
-	 */
-	if (!cmd_fkmap)
-#endif
 	{
 	    if (KeyTyped)
 	    {
@@ -6107,7 +6070,7 @@ write_viminfo_history(fp)
 }
 #endif /* FEAT_VIMINFO */
 
-#if defined(FEAT_FKMAP) || defined(PROTO)
+#if defined(PROTO)
 /*
  * Write a character at the current cursor+offset position.
  * It is directly written into the command buffer block.

@@ -308,21 +308,6 @@
 #endif
 
 /*
- * +farsi		Farsi (Persian language) Keymap support.
- *			Requires FEAT_RIGHTLEFT.
- *
- * Disabled for EBCDIC as it requires multibyte.
- */
-#if defined(FEAT_BIG) && !defined(EBCDIC)
-# define FEAT_FKMAP
-#endif
-#ifdef FEAT_FKMAP
-# ifndef FEAT_RIGHTLEFT
-#   define FEAT_RIGHTLEFT
-# endif
-#endif
-
-/*
  * +emacs_tags		When FEAT_EMACS_TAGS defined: Include support for
  *			emacs style TAGS file.
  */

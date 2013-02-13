@@ -542,10 +542,6 @@ EXTERN long	p_hi;		/* 'history' */
 #ifdef FEAT_RIGHTLEFT
 EXTERN int	p_hkmap;	/* 'hkmap' */
 EXTERN int	p_hkmapp;	/* 'hkmapp' */
-# ifdef FEAT_FKMAP
-EXTERN int	p_fkmap;	/* 'fkmap' */
-EXTERN int	p_altkeymap;	/* 'altkeymap' */
-# endif
 #endif
 #ifdef FEAT_TITLE
 EXTERN int	p_icon;		/* 'icon' */

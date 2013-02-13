@@ -449,15 +449,6 @@ edit(cmdchar, startln, count)
 
     if (cmdchar == 'R')
     {
-#ifdef FEAT_FKMAP
-	if (p_fkmap && p_ri)
-	{
-	    beep_flush();
-	    EMSG(farsi_text_3);	    /* encoded in Farsi */
-	    State = INSERT;
-	}
-	else
-#endif
 	State = REPLACE;
     }
 #ifdef FEAT_VREPLACE
@@ -758,10 +749,6 @@ edit(cmdchar, startln, count)
 #ifdef FEAT_RIGHTLEFT
 	if (p_hkmap && KeyTyped)
 	    c = hkmap(c);		/* Hebrew mode mapping */
-#endif
-#ifdef FEAT_FKMAP
-	if (p_fkmap && KeyTyped)
-	    c = fkmap(c);		/* Farsi mode mapping */
 #endif
 
 #ifdef FEAT_INS_EXPAND
@@ -5993,10 +5980,6 @@ insertchar(c, flags, second_indent)
 	    c = vgetc();
 	    if (p_hkmap && KeyTyped)
 		c = hkmap(c);		    /* Hebrew mode mapping */
-# ifdef FEAT_FKMAP
-	    if (p_fkmap && KeyTyped)
-		c = fkmap(c);		    /* Farsi mode mapping */
-# endif
 	    buf[i++] = c;
 #else
 	    buf[i++] = vgetc();
@@ -8443,22 +8426,6 @@ ins_ctrl_()
     }
     else
 	revins_scol = -1;
-#ifdef FEAT_FKMAP
-    if (p_altkeymap)
-    {
-	/*
-	 * to be consistent also for redo command, using '.'
-	 * set arrow_used to true and stop it - causing to redo
-	 * characters entered in one mode (normal/reverse insert).
-	 */
-	arrow_used = TRUE;
-	(void)stop_arrow();
-	p_fkmap = curwin->w_p_rl ^ p_ri;
-	if (p_fkmap && p_ri)
-	    State = INSERT;
-    }
-    else
-#endif
 	p_hkmap = curwin->w_p_rl ^ p_ri;    /* be consistent! */
     showmode();
 }
@@ -8529,14 +8496,6 @@ ins_start_select(c)
 ins_insert(replaceState)
     int	    replaceState;
 {
-#ifdef FEAT_FKMAP
-    if (p_fkmap && p_ri)
-    {
-	beep_flush();
-	EMSG(farsi_text_3);	/* encoded in Farsi */
-	return;
-    }
-#endif
 
 #ifdef FEAT_AUTOCMD
 # ifdef FEAT_EVAL
@@ -9847,10 +9806,6 @@ ins_eol(c)
 #endif
 
 #ifdef FEAT_RIGHTLEFT
-# ifdef FEAT_FKMAP
-    if (p_altkeymap && p_fkmap)
-	fkmap(NL);
-# endif
     /* NL in reverse insert will always start in the end of
      * current line. */
     if (revins_on)
