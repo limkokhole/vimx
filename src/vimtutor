@@ -66,9 +66,5 @@ if test -z "$VIM"; then
 	VIM=vim
 fi
 
-# Use Vim to copy the tutor, it knows the value of $VIMRUNTIME
-# The script tutor.vim tells Vim which file to copy
-$VIM -f -u NONE -c 'so $VIMRUNTIME/tutor/tutor.vim'
-
 # Start vim without any .vimrc, set 'nocompatible'
 $VIM -f -u NONE -c "set nocp" $TUTORCOPY
