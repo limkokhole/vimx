@@ -54,15 +54,7 @@ short	ospeed;		      /* Baud rate (1-16, 1=300, 16=19200), as in stty */
  */
 
 #ifndef TERMCAPFILE
-# ifdef AMIGA
-#  define TERMCAPFILE "s:termcap"
-# else
-#  ifdef VMS
-#   define TERMCAPFILE "VIMRUNTIME:termcap"
-#  else
-#   define TERMCAPFILE "/etc/termcap"
-#  endif
-# endif
+# define TERMCAPFILE "/etc/termcap"
 #endif
 
     int

@@ -305,7 +305,6 @@ RT_ALL =	\
 		runtime/ftplugof.vim \
 		runtime/indent.vim \
 		runtime/indoff.vim \
-		runtime/termcap \
 		runtime/tools/README.txt \
 		runtime/tools/[a-z]*[a-z0-9] \
 		runtime/tutor/README.txt \
