@@ -17,6 +17,7 @@ For details, see the `INSTALL` file in the `src` directory.
 * Removed Windows, Amiga and OS/2 support.
 * Removed rtl, farsi and hebrew support.
 * Removed any translations. English-only documentation.
+* Removed Vim tutorial, as it sucks.
 
 ## License
 
