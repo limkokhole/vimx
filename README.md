@@ -1,6 +1,6 @@
 # VimX 
 
-VimX is an UNIX text editor for programmers based on Vim.
+VimX is a terminal-based UNIX text editor for programmers based on Vim.
 
 ## Compiling
 
