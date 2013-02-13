@@ -546,9 +546,6 @@ EXTERN int	p_hkmapp;	/* 'hkmapp' */
 EXTERN int	p_fkmap;	/* 'fkmap' */
 EXTERN int	p_altkeymap;	/* 'altkeymap' */
 # endif
-# ifdef FEAT_ARABIC
-EXTERN int	p_arshape;	/* 'arabicshape' */
-# endif
 #endif
 #ifdef FEAT_TITLE
 EXTERN int	p_icon;		/* 'icon' */
@@ -771,9 +768,6 @@ EXTERN long	p_tl;		/* 'taglength' */
 EXTERN int	p_tr;		/* 'tagrelative' */
 EXTERN char_u	*p_tags;	/* 'tags' */
 EXTERN int	p_tgst;		/* 'tagstack' */
-#ifdef FEAT_ARABIC
-EXTERN int	p_tbidi;	/* 'termbidi' */
-#endif
 #ifdef FEAT_MBYTE
 EXTERN char_u	*p_tenc;	/* 'termencoding' */
 #endif
@@ -1039,9 +1033,6 @@ enum
 enum
 {
     WV_LIST = 0
-#ifdef FEAT_ARABIC
-    , WV_ARAB
-#endif
 #ifdef FEAT_CONCEAL
     , WV_COCU
     , WV_COLE

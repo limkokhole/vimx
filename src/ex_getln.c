@@ -1858,9 +1858,6 @@ cmdline_changed:
 
 #ifdef FEAT_RIGHTLEFT
 	if (cmdmsg_rl
-# ifdef FEAT_ARABIC
-		|| (p_arshape && !p_tbidi && enc_utf8)
-# endif
 		)
 	    /* Always redraw the whole command line to fix shaping and
 	     * right-left typing.  Not efficient, but it works.
@@ -2609,7 +2606,7 @@ realloc_cmdbuff(len)
     return OK;
 }
 
-#if defined(FEAT_ARABIC) || defined(PROTO)
+#if defined(PROTO)
 static char_u	*arshape_buf = NULL;
 
 # if defined(EXITFREE) || defined(PROTO)
@@ -2642,102 +2639,6 @@ draw_cmdline(start, len)
 		i += (*mb_ptr2len)(ccline.cmdbuff + start + i) - 1;
 # endif
 	}
-    else
-#endif
-#ifdef FEAT_ARABIC
-	if (p_arshape && !p_tbidi && enc_utf8 && len > 0)
-    {
-	static int	buflen = 0;
-	char_u		*p;
-	int		j;
-	int		newlen = 0;
-	int		mb_l;
-	int		pc, pc1 = 0;
-	int		prev_c = 0;
-	int		prev_c1 = 0;
-	int		u8c;
-	int		u8cc[MAX_MCO];
-	int		nc = 0;
-
-	/*
-	 * Do arabic shaping into a temporary buffer.  This is very
-	 * inefficient!
-	 */
-	if (len * 2 + 2 > buflen)
-	{
-	    /* Re-allocate the buffer.  We keep it around to avoid a lot of
-	     * alloc()/free() calls. */
-	    vim_free(arshape_buf);
-	    buflen = len * 2 + 2;
-	    arshape_buf = alloc(buflen);
-	    if (arshape_buf == NULL)
-		return;	/* out of memory */
-	}
-
-	if (utf_iscomposing(utf_ptr2char(ccline.cmdbuff + start)))
-	{
-	    /* Prepend a space to draw the leading composing char on. */
-	    arshape_buf[0] = ' ';
-	    newlen = 1;
-	}
-
-	for (j = start; j < start + len; j += mb_l)
-	{
-	    p = ccline.cmdbuff + j;
-	    u8c = utfc_ptr2char_len(p, u8cc, start + len - j);
-	    mb_l = utfc_ptr2len_len(p, start + len - j);
-	    if (ARABIC_CHAR(u8c))
-	    {
-		/* Do Arabic shaping. */
-		if (cmdmsg_rl)
-		{
-		    /* displaying from right to left */
-		    pc = prev_c;
-		    pc1 = prev_c1;
-		    prev_c1 = u8cc[0];
-		    if (j + mb_l >= start + len)
-			nc = NUL;
-		    else
-			nc = utf_ptr2char(p + mb_l);
-		}
-		else
-		{
-		    /* displaying from left to right */
-		    if (j + mb_l >= start + len)
-			pc = NUL;
-		    else
-		    {
-			int	pcc[MAX_MCO];
-
-			pc = utfc_ptr2char_len(p + mb_l, pcc,
-						      start + len - j - mb_l);
-			pc1 = pcc[0];
-		    }
-		    nc = prev_c;
-		}
-		prev_c = u8c;
-
-		u8c = arabic_shape(u8c, NULL, &u8cc[0], pc, pc1, nc);
-
-		newlen += (*mb_char2bytes)(u8c, arshape_buf + newlen);
-		if (u8cc[0] != 0)
-		{
-		    newlen += (*mb_char2bytes)(u8cc[0], arshape_buf + newlen);
-		    if (u8cc[1] != 0)
-			newlen += (*mb_char2bytes)(u8cc[1],
-							arshape_buf + newlen);
-		}
-	    }
-	    else
-	    {
-		prev_c = u8c;
-		mch_memmove(arshape_buf + newlen, p, mb_l);
-		newlen += mb_l;
-	    }
-	}
-
-	msg_outtrans_len(arshape_buf, newlen);
-    }
     else
 #endif
 	msg_outtrans_len(ccline.cmdbuff + start, len);
@@ -2868,22 +2769,6 @@ put_on_cmdline(str, len, redraw)
 		len += i;
 		c = utf_ptr2char(ccline.cmdbuff + ccline.cmdpos);
 	    }
-# ifdef FEAT_ARABIC
-	    if (i == 0 && ccline.cmdpos > 0 && arabic_maycombine(c))
-	    {
-		/* Check the previous character for Arabic combining pair. */
-		i = (*mb_head_off)(ccline.cmdbuff,
-				      ccline.cmdbuff + ccline.cmdpos - 1) + 1;
-		if (arabic_combine(utf_ptr2char(ccline.cmdbuff
-						     + ccline.cmdpos - i), c))
-		{
-		    ccline.cmdpos -= i;
-		    len += i;
-		}
-		else
-		    i = 0;
-	    }
-# endif
 	    if (i != 0)
 	    {
 		/* Also backup the cursor position. */

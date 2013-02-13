@@ -1611,10 +1611,3 @@ EXTERN char *ignoredp;
 #ifdef FEAT_FKMAP
 # include "farsi.h"
 #endif
-
-/*
- * Optional Arabic support. Include it here, so EXTERN and INIT are defined.
- */
-#ifdef FEAT_ARABIC
-# include "arabic.h"
-#endif

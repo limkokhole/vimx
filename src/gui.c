@@ -704,10 +704,6 @@ gui_init()
 	resettitle();
 #endif
 	init_gui_options();
-#ifdef FEAT_ARABIC
-	/* Our GUI can't do bidi. */
-	p_tbidi = FALSE;
-#endif
 #if defined(FEAT_GUI_GTK)
 	/* Give GTK+ a chance to put all widget's into place. */
 	gui_mch_update();

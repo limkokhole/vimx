@@ -129,10 +129,6 @@ typedef struct taggy
  */
 typedef struct
 {
-#ifdef FEAT_ARABIC
-    int		wo_arab;
-# define w_p_arab w_onebuf_opt.wo_arab	/* 'arabic' */
-#endif
 #ifdef FEAT_DIFF
     int		wo_diff;
 # define w_p_diff w_onebuf_opt.wo_diff	/* 'diff' */

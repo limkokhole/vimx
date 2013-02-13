@@ -1823,7 +1823,7 @@ mb_cptr2char_adv(pp)
     return c;
 }
 
-#if defined(FEAT_ARABIC) || defined(PROTO)
+#if defined(PROTO)
 /*
  * Check whether we are dealing with Arabic combining characters.
  * Note: these are NOT really composing characters!
@@ -2057,9 +2057,6 @@ utfc_ptr2len(p)
 {
     int		len;
     int		b0 = *p;
-#ifdef FEAT_ARABIC
-    int		prevlen;
-#endif
 
     if (b0 == NUL)
 	return 0;
@@ -2077,18 +2074,12 @@ utfc_ptr2len(p)
      * Check for composing characters.  We can handle only the first six, but
      * skip all of them (otherwise the cursor would get stuck).
      */
-#ifdef FEAT_ARABIC
-    prevlen = 0;
-#endif
     for (;;)
     {
 	if (p[len] < 0x80 || !UTF_COMPOSINGLIKE(p + prevlen, p + len))
 	    return len;
 
 	/* Skip over composing char */
-#ifdef FEAT_ARABIC
-	prevlen = len;
-#endif
 	len += utf_ptr2len(p + len);
     }
 }
@@ -2105,9 +2096,6 @@ utfc_ptr2len_len(p, size)
     int		size;
 {
     int		len;
-#ifdef FEAT_ARABIC
-    int		prevlen;
-#endif
 
     if (size < 1 || *p == NUL)
 	return 0;
@@ -2125,9 +2113,6 @@ utfc_ptr2len_len(p, size)
      * Check for composing characters.  We can handle only the first six, but
      * skip all of them (otherwise the cursor would get stuck).
      */
-#ifdef FEAT_ARABIC
-    prevlen = 0;
-#endif
     while (len < size)
     {
 	int	len_next_char;
@@ -2147,9 +2132,6 @@ utfc_ptr2len_len(p, size)
 	    break;
 
 	/* Skip over composing char */
-#ifdef FEAT_ARABIC
-	prevlen = len;
-#endif
 	len += len_next_char;
     }
     return len;
@@ -3427,9 +3409,6 @@ utf_head_off(base, p)
     char_u	*s;
     int		c;
     int		len;
-#ifdef FEAT_ARABIC
-    char_u	*j;
-#endif
 
     if (*p < 0x80)		/* be quick for ASCII */
 	return 0;
@@ -3457,19 +3436,6 @@ utf_head_off(base, p)
 	if (utf_iscomposing(c))
 	    continue;
 
-#ifdef FEAT_ARABIC
-	if (arabic_maycombine(c))
-	{
-	    /* Advance to get a sneak-peak at the next char */
-	    j = q;
-	    --j;
-	    /* Move j to the first byte of this char. */
-	    while (j > base && (*j & 0xc0) == 0x80)
-		--j;
-	    if (arabic_combine(utf_ptr2char(j), c))
-		continue;
-	}
-#endif
 	break;
     }
 

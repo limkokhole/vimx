@@ -2372,10 +2372,6 @@ fold_line(wp, fold_count, foldinfo, lnum, row)
 	int	idx;
 	int	c_len;
 	char_u	*p;
-# ifdef FEAT_ARABIC
-	int	prev_c = 0;		/* previous Arabic character */
-	int	prev_c1 = 0;		/* first composing char for prev_c */
-# endif
 
 # ifdef FEAT_RIGHTLEFT
 	if (wp->w_p_rl)
@@ -2402,44 +2398,9 @@ fold_line(wp, fold_count, foldinfo, lnum, row)
 		if (*p < 0x80 && u8cc[0] == 0)
 		{
 		    ScreenLinesUC[idx] = 0;
-#ifdef FEAT_ARABIC
-		    prev_c = u8c;
-#endif
 		}
 		else
 		{
-#ifdef FEAT_ARABIC
-		    if (p_arshape && !p_tbidi && ARABIC_CHAR(u8c))
-		    {
-			/* Do Arabic shaping. */
-			int	pc, pc1, nc;
-			int	pcc[MAX_MCO];
-			int	firstbyte = *p;
-
-			/* The idea of what is the previous and next
-			 * character depends on 'rightleft'. */
-			if (wp->w_p_rl)
-			{
-			    pc = prev_c;
-			    pc1 = prev_c1;
-			    nc = utf_ptr2char(p + c_len);
-			    prev_c1 = u8cc[0];
-			}
-			else
-			{
-			    pc = utfc_ptr2char(p + c_len, pcc);
-			    nc = prev_c;
-			    pc1 = pcc[0];
-			}
-			prev_c = u8c;
-
-			u8c = arabic_shape(u8c, &firstbyte, &u8cc[0],
-								 pc, pc1, nc);
-			ScreenLines[idx] = firstbyte;
-		    }
-		    else
-			prev_c = u8c;
-#endif
 		    /* Non-BMP character: display as ? or fullwidth ?. */
 #ifdef UNICODE16
 		    if (u8c >= 0x10000)
@@ -2796,10 +2757,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
     int		prevcol_hl_flag;	/* flag to indicate whether prevcol
 					   equals startcol of search_hl or one
 					   of the matches */
-#endif
-#ifdef FEAT_ARABIC
-    int		prev_c = 0;		/* previous Arabic character */
-    int		prev_c1 = 0;		/* first composing char for prev_c */
 #endif
 #if defined(LINE_ATTR)
     int		did_line_attr = 0;
@@ -3945,35 +3902,6 @@ win_line(wp, lnum, startrow, endrow, nochange)
 		    }
 		    else if (mb_l == 0)  /* at the NUL at end-of-line */
 			mb_l = 1;
-#ifdef FEAT_ARABIC
-		    else if (p_arshape && !p_tbidi && ARABIC_CHAR(mb_c))
-		    {
-			/* Do Arabic shaping. */
-			int	pc, pc1, nc;
-			int	pcc[MAX_MCO];
-
-			/* The idea of what is the previous and next
-			 * character depends on 'rightleft'. */
-			if (wp->w_p_rl)
-			{
-			    pc = prev_c;
-			    pc1 = prev_c1;
-			    nc = utf_ptr2char(ptr + mb_l);
-			    prev_c1 = u8cc[0];
-			}
-			else
-			{
-			    pc = utfc_ptr2char(ptr + mb_l, pcc);
-			    nc = prev_c;
-			    pc1 = pcc[0];
-			}
-			prev_c = mb_c;
-
-			mb_c = arabic_shape(mb_c, &c, &u8cc[0], pc, pc1, nc);
-		    }
-		    else
-			prev_c = mb_c;
-#endif
 		}
 		else	/* enc_dbcs */
 		{
@@ -6786,11 +6714,6 @@ screen_puts_len(text, len, row, col, attr)
     int		u8c = 0;
     int		u8cc[MAX_MCO];
     int		clear_next_cell = FALSE;
-# ifdef FEAT_ARABIC
-    int		prev_c = 0;		/* previous Arabic character */
-    int		pc, nc, nc1;
-    int		pcc[MAX_MCO];
-# endif
 #endif
 #if defined(FEAT_MBYTE) || defined(FEAT_GUI) || defined(UNIX)
     int		force_redraw_this;
@@ -6861,29 +6784,6 @@ screen_puts_len(text, len, row, col, attr)
 		    if (attr == 0)
 			attr = hl_attr(HLF_8);
 		}
-# endif
-# ifdef FEAT_ARABIC
-		if (p_arshape && !p_tbidi && ARABIC_CHAR(u8c))
-		{
-		    /* Do Arabic shaping. */
-		    if (len >= 0 && (int)(ptr - text) + mbyte_blen >= len)
-		    {
-			/* Past end of string to be displayed. */
-			nc = NUL;
-			nc1 = NUL;
-		    }
-		    else
-		    {
-			nc = utfc_ptr2char_len(ptr + mbyte_blen, pcc,
-				      (int)((text + len) - ptr - mbyte_blen));
-			nc1 = pcc[0];
-		    }
-		    pc = prev_c;
-		    prev_c = u8c;
-		    u8c = arabic_shape(u8c, &c, &u8cc[0], nc, nc1, pc);
-		}
-		else
-		    prev_c = u8c;
 # endif
 		if (col + mbyte_cells > screen_Columns)
 		{
@@ -9598,11 +9498,6 @@ showmode()
 #ifdef FEAT_KEYMAP
 		if (State & LANGMAP)
 		{
-# ifdef FEAT_ARABIC
-		    if (curwin->w_p_arab)
-			MSG_PUTS_ATTR(_(" Arabic"), attr);
-		    else
-# endif
 			MSG_PUTS_ATTR(_(" (lang)"), attr);
 		}
 #endif

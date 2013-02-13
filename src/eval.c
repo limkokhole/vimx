@@ -12075,9 +12075,6 @@ f_has(argvars, rettv)
 #ifndef CASE_INSENSITIVE_FILENAME
 	"fname_case",
 #endif
-#ifdef FEAT_ARABIC
-	"arabic",
-#endif
 #ifdef FEAT_AUTOCMD
 	"autocmd",
 #endif

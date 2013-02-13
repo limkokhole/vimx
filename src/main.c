@@ -653,9 +653,6 @@ vim_main2(int argc UNUSED, char **argv UNUSED)
     if (curwin->w_p_rl && p_altkeymap)
     {
 	p_hkmap = FALSE;	/* Reset the Hebrew keymap mode */
-# ifdef FEAT_ARABIC
-	curwin->w_p_arab = FALSE; /* Reset the Arabic keymap mode */
-# endif
 	p_fkmap = TRUE;		/* Set the Farsi keymap mode */
     }
 #endif
@@ -1898,12 +1895,8 @@ command_line_scan(parmp)
 		break;
 
 	    case 'A':		/* "-A" start in Arabic mode */
-#ifdef FEAT_ARABIC
-		set_option_value((char_u *)"arabic", 1L, NULL, 0);
-#else
 		mch_errmsg(_(e_noarabic));
 		mch_exit(2);
-#endif
 		break;
 
 	    case 'b':		/* "-b" binary mode */
@@ -3236,9 +3229,6 @@ usage()
     main_msg(_("-f\t\t\tDon't use newcli to open window"));
     main_msg(_("-dev <device>\t\tUse <device> for I/O"));
 #endif
-#ifdef FEAT_ARABIC
-    main_msg(_("-A\t\t\tstart in Arabic mode"));
-#endif
 #ifdef FEAT_RIGHTLEFT
     main_msg(_("-H\t\t\tStart in Hebrew mode"));
 #endif
@@ -4096,11 +4086,4 @@ serverConvert(client_enc, data, tofree)
  */
 #if defined(FEAT_FKMAP) || defined(PROTO)
 # include "farsi.c"
-#endif
-
-/*
- * When FEAT_ARABIC is defined, also compile the Arabic source code.
- */
-#if defined(FEAT_ARABIC) || defined(PROTO)
-# include "arabic.c"
 #endif

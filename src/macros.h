@@ -239,11 +239,7 @@
 # define REPLACE_NORMAL(s) ((s) & REPLACE_FLAG)
 #endif
 
-#ifdef FEAT_ARABIC
-# define UTF_COMPOSINGLIKE(p1, p2)  utf_composinglike((p1), (p2))
-#else
 # define UTF_COMPOSINGLIKE(p1, p2)  utf_iscomposing(utf_ptr2char(p2))
-#endif
 
 #ifdef FEAT_RIGHTLEFT
     /* Whether to draw the vertical bar on the right side of the cell. */

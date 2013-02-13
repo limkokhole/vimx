@@ -65,11 +65,6 @@ static char *(features[]) =
 	"-ARP",
 # endif
 #endif
-#ifdef FEAT_ARABIC
-	"+arabic",
-#else
-	"-arabic",
-#endif
 #ifdef FEAT_AUTOCMD
 	"+autocmd",
 #else

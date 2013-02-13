@@ -184,9 +184,6 @@
  * The WV_ values are defined in option.h.
  */
 #define PV_LIST		OPT_WIN(WV_LIST)
-#ifdef FEAT_ARABIC
-# define PV_ARAB	OPT_WIN(WV_ARAB)
-#endif
 #ifdef FEAT_DIFF
 # define PV_DIFF	OPT_WIN(WV_DIFF)
 #endif
@@ -504,18 +501,10 @@ static struct vimoption
 #endif
 			    SCRIPTID_INIT},
     {"arabic",	    "arab", P_BOOL|P_VI_DEF|P_VIM|P_CURSWANT,
-#ifdef FEAT_ARABIC
-			    (char_u *)VAR_WIN, PV_ARAB,
-#else
 			    (char_u *)NULL, PV_NONE,
-#endif
 			    {(char_u *)FALSE, (char_u *)0L} SCRIPTID_INIT},
     {"arabicshape", "arshape", P_BOOL|P_VI_DEF|P_VIM|P_RCLR,
-#ifdef FEAT_ARABIC
-			    (char_u *)&p_arshape, PV_NONE,
-#else
 			    (char_u *)NULL, PV_NONE,
-#endif
 			    {(char_u *)TRUE, (char_u *)0L} SCRIPTID_INIT},
     {"allowrevins", "ari",  P_BOOL|P_VI_DEF|P_VIM,
 #ifdef FEAT_RIGHTLEFT
@@ -2519,11 +2508,7 @@ static struct vimoption
 			    (char_u *)&T_NAME, PV_NONE,
 			    {(char_u *)"", (char_u *)0L} SCRIPTID_INIT},
     {"termbidi", "tbidi",   P_BOOL|P_VI_DEF,
-#ifdef FEAT_ARABIC
-			    (char_u *)&p_tbidi, PV_NONE,
-#else
 			    (char_u *)NULL, PV_NONE,
-#endif
 			    {(char_u *)FALSE, (char_u *)0L} SCRIPTID_INIT},
     {"termencoding", "tenc", P_STRING|P_VI_DEF|P_RCLR,
 #ifdef FEAT_MBYTE
@@ -3339,17 +3324,6 @@ set_init_1()
 
     /* Parse default for 'wildmode'  */
     check_opt_wim();
-
-#if defined(FEAT_ARABIC)
-    /* Detect use of mlterm.
-     * Mlterm is a terminal emulator akin to xterm that has some special
-     * abilities (bidi namely).
-     * NOTE: mlterm's author is being asked to 'set' a variable
-     *       instead of an environment variable due to inheritance.
-     */
-    if (mch_getenv((char_u *)"MLTERM") != NULL)
-	set_option_value((char_u *)"tbidi", 1L, NULL, 0);
-#endif
 
 #if defined(FEAT_WINDOWS) || defined(FEAT_FOLDING)
     /* Parse default for 'fillchars'. */
@@ -7990,9 +7964,6 @@ set_bool_option(opt_idx, varp, value, opt_flags)
     if ((p_hkmap || p_fkmap) && p_altkeymap)
     {
 	p_altkeymap = p_fkmap;
-# ifdef FEAT_ARABIC
-	curwin->w_p_arab = FALSE;
-# endif
 	(void)init_chartab();
     }
 
@@ -8003,9 +7974,6 @@ set_bool_option(opt_idx, varp, value, opt_flags)
     {
 	p_altkeymap = 0;
 	p_fkmap = 0;
-# ifdef FEAT_ARABIC
-	curwin->w_p_arab = FALSE;
-# endif
 	(void)init_chartab();
     }
 
@@ -8016,97 +7984,8 @@ set_bool_option(opt_idx, varp, value, opt_flags)
     {
 	p_altkeymap = 1;
 	p_hkmap = 0;
-# ifdef FEAT_ARABIC
-	curwin->w_p_arab = FALSE;
-# endif
 	(void)init_chartab();
     }
-#endif
-
-#ifdef FEAT_ARABIC
-    if ((int *)varp == &curwin->w_p_arab)
-    {
-	if (curwin->w_p_arab)
-	{
-	    /*
-	     * 'arabic' is set, handle various sub-settings.
-	     */
-	    if (!p_tbidi)
-	    {
-		/* set rightleft mode */
-		if (!curwin->w_p_rl)
-		{
-		    curwin->w_p_rl = TRUE;
-		    changed_window_setting();
-		}
-
-		/* Enable Arabic shaping (major part of what Arabic requires) */
-		if (!p_arshape)
-		{
-		    p_arshape = TRUE;
-		    redraw_later_clear();
-		}
-	    }
-
-	    /* Arabic requires a utf-8 encoding, inform the user if its not
-	     * set. */
-	    if (STRCMP(p_enc, "utf-8") != 0)
-	    {
-		static char *w_arabic = N_("W17: Arabic requires UTF-8, do ':set encoding=utf-8'");
-
-		msg_source(hl_attr(HLF_W));
-		MSG_ATTR(_(w_arabic), hl_attr(HLF_W));
-#ifdef FEAT_EVAL
-		set_vim_var_string(VV_WARNINGMSG, (char_u *)_(w_arabic), -1);
-#endif
-	    }
-
-# ifdef FEAT_MBYTE
-	    /* set 'delcombine' */
-	    p_deco = TRUE;
-# endif
-
-# ifdef FEAT_KEYMAP
-	    /* Force-set the necessary keymap for arabic */
-	    set_option_value((char_u *)"keymap", 0L, (char_u *)"arabic",
-								   OPT_LOCAL);
-# endif
-# ifdef FEAT_FKMAP
-	    p_altkeymap = 0;
-	    p_hkmap = 0;
-	    p_fkmap = 0;
-	    (void)init_chartab();
-# endif
-	}
-	else
-	{
-	    /*
-	     * 'arabic' is reset, handle various sub-settings.
-	     */
-	    if (!p_tbidi)
-	    {
-		/* reset rightleft mode */
-		if (curwin->w_p_rl)
-		{
-		    curwin->w_p_rl = FALSE;
-		    changed_window_setting();
-		}
-
-		/* 'arabicshape' isn't reset, it is a global option and
-		 * another window may still need it "on". */
-	    }
-
-	    /* 'delcombine' isn't reset, it is a global option and another
-	     * window may still want it "on". */
-
-# ifdef FEAT_KEYMAP
-	    /* Revert to the default keymap */
-	    curbuf->b_p_iminsert = B_IMODE_NONE;
-	    curbuf->b_p_imsearch = B_IMODE_USE_INSERT;
-# endif
-	}
-    }
-
 #endif
 
     /*
@@ -9640,9 +9519,6 @@ get_varp(p)
 				    ? (char_u *)&(curwin->w_p_stl) : p->var;
 #endif
 
-#ifdef FEAT_ARABIC
-	case PV_ARAB:	return (char_u *)&(curwin->w_p_arab);
-#endif
 	case PV_LIST:	return (char_u *)&(curwin->w_p_list);
 #ifdef FEAT_SPELL
 	case PV_SPELL:	return (char_u *)&(curwin->w_p_spell);
@@ -9858,9 +9734,6 @@ copy_winopt(from, to)
     winopt_T	*from;
     winopt_T	*to;
 {
-#ifdef FEAT_ARABIC
-    to->wo_arab = from->wo_arab;
-#endif
     to->wo_list = from->wo_list;
     to->wo_nu = from->wo_nu;
     to->wo_rnu = from->wo_rnu;
