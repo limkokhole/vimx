@@ -130,8 +130,6 @@
 #		make installlinks	only installs the Vim binary links
 #		make installmanlinks	only installs the Vim manpage links
 #		make installmacros	only installs the Vim macros
-#		make installtutorbin	only installs the Vim tutor program
-#		make installtutor	only installs the Vim tutor files
 #		make installspell	only installs the spell files
 #		make installtools	only installs xxd
 #	If you install Vim, not to install for real but to prepare a package
@@ -962,7 +960,6 @@ COMPSUBDIR = /compiler
 KMAPSUBDIR = /keymap
 MACROSUBDIR = /macros
 TOOLSSUBDIR = /tools
-TUTORSUBDIR = /tutor
 SPELLSUBDIR = /spell
 PRINTSUBDIR = /print
 PODIR = po
@@ -983,7 +980,6 @@ PODIR = po
 ### KMAPSUBLOC	location for keymap files
 ### MACROSUBLOC	location for macro files
 ### TOOLSSUBLOC	location for tools files
-### TUTORSUBLOC	location for tutor files
 ### SPELLSUBLOC	location for spell files
 ### PRINTSUBLOC	location for PostScript files (prolog, latin1, ..)
 ### SCRIPTLOC	location for script files (menu.vim, bugreport.vim, ..)
@@ -1004,7 +1000,6 @@ COMPSUBLOC	= $(VIMRTLOC)$(COMPSUBDIR)
 KMAPSUBLOC	= $(VIMRTLOC)$(KMAPSUBDIR)
 MACROSUBLOC	= $(VIMRTLOC)$(MACROSUBDIR)
 TOOLSSUBLOC	= $(VIMRTLOC)$(TOOLSSUBDIR)
-TUTORSUBLOC	= $(VIMRTLOC)$(TUTORSUBDIR)
 SPELLSUBLOC	= $(VIMRTLOC)$(SPELLSUBDIR)
 PRINTSUBLOC	= $(VIMRTLOC)$(PRINTSUBDIR)
 SCRIPTLOC	= $(VIMRTLOC)
@@ -1110,9 +1105,6 @@ MACROSOURCE = ../runtime/macros
 
 # Where to copy the tools files from
 TOOLSSOURCE = ../runtime/tools
-
-# Where to copy the tutor files from
-TUTORSOURCE = ../runtime/tutor
 
 # Where to copy the spell files from
 SPELLSOURCE = ../runtime/spell
@@ -1383,7 +1375,6 @@ DEST_COMP = $(DESTDIR)$(COMPSUBLOC)
 DEST_KMAP = $(DESTDIR)$(KMAPSUBLOC)
 DEST_MACRO = $(DESTDIR)$(MACROSUBLOC)
 DEST_TOOLS = $(DESTDIR)$(TOOLSSUBLOC)
-DEST_TUTOR = $(DESTDIR)$(TUTORSUBLOC)
 DEST_SPELL = $(DESTDIR)$(SPELLSUBLOC)
 DEST_SCRIPT = $(DESTDIR)$(SCRIPTLOC)
 DEST_PRINT = $(DESTDIR)$(PRINTSUBLOC)
@@ -1878,9 +1869,9 @@ install: $(GUI_INSTALL)
 
 install_normal: installvim installtools $(INSTALL_LANGS) install-icons
 
-install_gui_extra: installgtutorbin
+install_gui_extra:
 
-installvim: installvimbin installtutorbin \
+installvim: installvimbin \
 		installruntime installlinks installmanlinks
 
 #
@@ -1909,13 +1900,13 @@ INSTALLMANARGS = $(VIMLOC) $(SCRIPTLOC) $(VIMRCLOC) $(HELPSOURCE) $(MANMOD) \
 		$(VIMNAME) $(VIMDIFFNAME) $(EVIMNAME)
 
 # Install most of the runtime files
-installruntime: installrtbase installmacros installtutor installspell
+installruntime: installrtbase installmacros installspell
 
 # install the help files; first adjust the contents for the final location
 installrtbase: $(HELPSOURCE)/vim.1 $(DEST_VIM) $(DEST_RT) \
 		$(DEST_HELP) $(DEST_PRINT) $(DEST_COL) $(DEST_SYN) $(DEST_IND) \
 		$(DEST_FTP) $(DEST_AUTO) $(DEST_AUTO)/xml $(DEST_PLUG) \
-		$(DEST_TUTOR) $(DEST_SPELL) $(DEST_COMP)
+		$(DEST_SPELL) $(DEST_COMP)
 	-$(SHELL) ./installman.sh install $(DEST_MAN) "" $(INSTALLMANARGS)
 	@echo generating help tags
 # Generate the help tags with ":helptags" to handle all languages.
@@ -2003,20 +1994,6 @@ installmacros: $(DEST_VIM) $(DEST_RT) $(DEST_MACRO)
 	      if test -n "$$cvs"; then \
 		 rm -rf $$cvs; \
 	      fi
-
-# install the tutor files
-installtutorbin: $(DEST_VIM)
-	$(INSTALL_DATA) vimtutor $(DEST_BIN)/$(VIMNAME)tutor
-	chmod $(SCRIPTMOD) $(DEST_BIN)/$(VIMNAME)tutor
-
-installgtutorbin: $(DEST_VIM)
-	$(INSTALL_DATA) gvimtutor $(DEST_BIN)/$(GVIMNAME)tutor
-	chmod $(SCRIPTMOD) $(DEST_BIN)/$(GVIMNAME)tutor
-
-installtutor: $(DEST_RT) $(DEST_TUTOR)
-	-$(INSTALL_DATA) $(TUTORSOURCE)/README* $(TUTORSOURCE)/tutor* $(DEST_TUTOR)
-	-rm -f $(DEST_TUTOR)/*.info
-	chmod $(HELPMOD) $(DEST_TUTOR)/*
 
 # Install the spell files, if they exist.  This assumes at least the English
 # spell file is there.
@@ -2145,7 +2122,7 @@ $(DESTDIR)$(exec_prefix) $(DEST_BIN) \
 		$(DEST_VIM) $(DEST_RT) $(DEST_HELP) \
 		$(DEST_PRINT) $(DEST_COL) $(DEST_SYN) $(DEST_IND) $(DEST_FTP) \
 		$(DEST_LANG) $(DEST_KMAP) $(DEST_COMP) \
-		$(DEST_MACRO) $(DEST_TOOLS) $(DEST_TUTOR) $(DEST_SPELL) \
+		$(DEST_MACRO) $(DEST_TOOLS) $(DEST_SPELL) \
 		$(DEST_AUTO) $(DEST_AUTO)/xml $(DEST_PLUG):
 	-$(SHELL) ./mkinstalldirs $@
 	-chmod $(DIRMOD) $@
@@ -2220,8 +2197,6 @@ installmanlinks:
 
 uninstall: uninstall_runtime
 	-rm -f $(DEST_BIN)/$(VIMTARGET)
-	-rm -f $(DEST_BIN)/vimtutor
-	-rm -f $(DEST_BIN)/gvimtutor
 	-rm -f $(DEST_BIN)/$(EXTARGET) $(DEST_BIN)/$(VIEWTARGET)
 	-rm -f $(DEST_BIN)/$(GVIMTARGET) $(DEST_BIN)/$(GVIEWTARGET)
 	-rm -f $(DEST_BIN)/$(RVIMTARGET) $(DEST_BIN)/$(RVIEWTARGET)
@@ -2286,7 +2261,6 @@ uninstall_runtime:
 	-rm -f $(DEST_SYN)/*.vim $(DEST_SYN)/README.txt
 	-rm -f $(DEST_IND)/*.vim $(DEST_IND)/README.txt
 	-rm -rf $(DEST_MACRO)
-	-rm -rf $(DEST_TUTOR)
 	-rm -rf $(DEST_SPELL)
 	-rm -rf $(DEST_TOOLS)
 	-rm -rf $(DEST_LANG)
@@ -2321,7 +2295,7 @@ SHADOWDIR = shadow
 
 shadow:	runtime pixmaps
 	mkdir $(SHADOWDIR)
-	cd $(SHADOWDIR); ln -s ../*.[ch] ../*.in ../*.sh ../*.xs ../*.xbm ../toolcheck ../proto ../po ../vimtutor ../gvimtutor ../mkinstalldirs .
+	cd $(SHADOWDIR); ln -s ../*.[ch] ../*.in ../*.sh ../*.xs ../*.xbm ../toolcheck ../proto ../po ../mkinstalldirs .
 	mkdir $(SHADOWDIR)/auto
 	cd $(SHADOWDIR)/auto; ln -s ../../auto/configure .
 	cd $(SHADOWDIR); rm -f auto/link.sed
@@ -2732,7 +2706,6 @@ install_macosx: gui_bundle
 	ln -s `pwd`/../runtime $(RESDIR)/vim
 # Copy rgb.txt, Mac doesn't always have X11
 	$(INSTALL_DATA) $(SCRIPTSOURCE)/rgb.txt $(DESTDIR)$(prefix)/$(RESDIR)/vim/runtime
-# TODO: Create the vimtutor and/or gvimtutor application.
 
 gui_bundle: $(RESDIR) bundle-dir bundle-executable bundle-info bundle-resource \
 	bundle-language

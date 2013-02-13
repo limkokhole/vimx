@@ -34,7 +34,6 @@ evimname=$9
 helpsubloc=$scriptloc/doc
 printsubloc=$scriptloc/print
 synsubloc=$scriptloc/syntax
-tutorsubloc=$scriptloc/tutor
 
 if test $what = "install" -o $what = "xxd"; then
    if test ! -d $destdir; then
@@ -50,7 +49,6 @@ if test $what = "install"; then
 	   -e s+$vimloc/doc+$helpsubloc+ \
 	   -e s+$vimloc/print+$printsubloc+ \
 	   -e s+$vimloc/syntax+$synsubloc+ \
-	   -e s+$vimloc/tutor+$tutorsubloc+ \
 	   -e s+$vimloc/vimrc+$vimrcloc/vimrc+ \
 	   -e s+$vimloc/gvimrc+$vimrcloc/gvimrc+ \
 	   -e s+$vimloc/menu.vim+$scriptloc/menu.vim+ \
@@ -61,13 +59,6 @@ if test $what = "install"; then
 	   -e 's+$vimloc/\*.ps+$scriptloc/\*.ps+' \
 	   $helpsource/vim$langadd.1 > $destdir/$exename.1
    chmod $manmod $destdir/$exename.1
-
-   # vimtutor.1
-   echo installing $destdir/$exename""tutor.1
-   sed -e s+/usr/local/lib/vim+$vimloc+ \
-	   -e s+$vimloc/tutor+$tutorsubloc+ \
-	   $helpsource/vimtutor$langadd.1 > $destdir/$exename""tutor.1
-   chmod $manmod $destdir/$exename""tutor.1
 
    # vimdiff.1
    echo installing $destdir/$vimdiffname.1
@@ -87,10 +78,6 @@ if test $what = "uninstall"; then
    if test -r $destdir/$exename.1; then
       echo deleting $destdir/$exename.1
       rm -f $destdir/$exename.1
-   fi
-   if test -r $destdir/$exename""tutor.1; then
-      echo deleting $destdir/$exename""tutor.1
-      rm -f $destdir/$exename""tutor.1
    fi
    if test -r $destdir/$vimdiffname.1; then
       echo deleting $destdir/$vimdiffname.1

@@ -280,32 +280,10 @@ HTMLS = \
 	windows.html \
 	workshop.html
 
-CONVERTED = \
-	vim-fr.UTF-8.1 \
-	evim-fr.UTF-8.1 \
-	vimdiff-fr.UTF-8.1 \
-	vimtutor-fr.UTF-8.1 \
-	xxd-fr.UTF-8.1 \
-	vim-it.UTF-8.1 \
-	evim-it.UTF-8.1 \
-	vimdiff-it.UTF-8.1 \
-	vimtutor-it.UTF-8.1 \
-	xxd-it.UTF-8.1 \
-	vim-pl.UTF-8.1 \
-	evim-pl.UTF-8.1 \
-	vimdiff-pl.UTF-8.1 \
-	vimtutor-pl.UTF-8.1 \
-	xxd-pl.UTF-8.1 \
-	vim-ru.UTF-8.1 \
-	evim-ru.UTF-8.1 \
-	vimdiff-ru.UTF-8.1 \
-	vimtutor-ru.UTF-8.1 \
-	xxd-ru.UTF-8.1
-
 .SUFFIXES:
 .SUFFIXES: .c .o .txt .html
 
-all: tags vim.man evim.man vimdiff.man vimtutor.man xxd.man $(CONVERTED)
+all: tags vim.man evim.man vimdiff.man xxd.man
 
 # Use Vim to generate the tags file.  Can only be used when Vim has been
 # compiled and installed.  Supports multiple languages.
@@ -328,9 +306,6 @@ evim.man: evim.1
 
 vimdiff.man: vimdiff.1
 	nroff -man vimdiff.1 | sed -e s/.//g > vimdiff.man
-
-vimtutor.man: vimtutor.1
-	nroff -man vimtutor.1 | sed -e s/.//g > vimtutor.man
 
 xxd.man: xxd.1
 	nroff -man xxd.1 | sed -e s/.//g > xxd.man
@@ -438,9 +413,6 @@ evim-fr.UTF-8.1: evim-fr.1
 vimdiff-fr.UTF-8.1: vimdiff-fr.1
 	iconv -f latin1 -t utf-8 $< >$@
 
-vimtutor-fr.UTF-8.1: vimtutor-fr.1
-	iconv -f latin1 -t utf-8 $< >$@
-
 xxd-fr.UTF-8.1: xxd-fr.1
 	iconv -f latin1 -t utf-8 $< >$@
 
@@ -451,9 +423,6 @@ evim-it.UTF-8.1: evim-it.1
 	iconv -f latin1 -t utf-8 $< >$@
 
 vimdiff-it.UTF-8.1: vimdiff-it.1
-	iconv -f latin1 -t utf-8 $< >$@
-
-vimtutor-it.UTF-8.1: vimtutor-it.1
 	iconv -f latin1 -t utf-8 $< >$@
 
 xxd-it.UTF-8.1: xxd-it.1
@@ -468,10 +437,7 @@ evim-pl.UTF-8.1: evim-pl.1
 vimdiff-pl.UTF-8.1: vimdiff-pl.1
 	iconv -f latin2 -t utf-8 $< >$@
 
-vimtutor-pl.UTF-8.1: vimtutor-pl.1
-	iconv -f latin2 -t utf-8 $< >$@
-
-xxd-pl.UTF-8.1: xxd-pl.1
+vimxxd-pl.UTF-8.1: xxd-pl.1
 	iconv -f latin2 -t utf-8 $< >$@
 
 vim-ru.UTF-8.1: vim-ru.1
@@ -481,9 +447,6 @@ evim-ru.UTF-8.1: evim-ru.1
 	iconv -f KOI8-R -t utf-8 $< >$@
 
 vimdiff-ru.UTF-8.1: vimdiff-ru.1
-	iconv -f KOI8-R -t utf-8 $< >$@
-
-vimtutor-ru.UTF-8.1: vimtutor-ru.1
 	iconv -f KOI8-R -t utf-8 $< >$@
 
 xxd-ru.UTF-8.1: xxd-ru.1
