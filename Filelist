@@ -138,9 +138,6 @@ SRC_UNIX =	\
 		Makefile \
 		Filelist \
 		configure \
-		pixmaps/*.xpm \
-		pixmaps/gen-inline-pixbufs.sh \
-		pixmaps/stock_icons.h \
 		src/INSTALL \
 		src/INSTALLx.txt \
 		src/Makefile \
