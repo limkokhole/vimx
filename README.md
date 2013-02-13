@@ -13,10 +13,8 @@ For details, see the `INSTALL` file in the `src` directory.
 
 ## Features
 
-* Removed unnecessary README files.
-* Removed Windows, Amiga and OS/2 support.
-* Removed rtl, farsi and hebrew support.
-* Removed any translations. English-only documentation.
+* Removed support for operating systems other than UNIX.
+* Removed translations for languages other then English.
 * Removed Vim tutorial, as it sucks.
 
 ## License
