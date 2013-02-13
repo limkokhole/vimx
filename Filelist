@@ -368,49 +368,6 @@ EXTRA =		\
 		src/tee/Makefile \
 		src/tee/tee.c \
 
-# generic language files
-LANG_GEN = \
-		runtime/doc/*-de.1 \
-		runtime/doc/*-de.UTF-8.1 \
-		runtime/doc/*-fr.1 \
-		runtime/doc/*-fr.UTF-8.1 \
-		runtime/doc/*-it.1 \
-		runtime/doc/*-it.UTF-8.1 \
-		runtime/doc/*-pl.1 \
-		runtime/doc/*-pl.UTF-8.1 \
-		runtime/doc/*-ru.1 \
-		runtime/doc/*-ru.UTF-8.1 \
-		runtime/lang/README.txt \
-		runtime/lang/menu_*.vim \
-		runtime/keymap/README.txt \
-		runtime/keymap/*.vim \
-		runtime/tutor/README.*.txt \
-		runtime/tutor/Makefile \
-		runtime/tutor/tutor.utf-8 \
-		runtime/tutor/tutor.?? \
-		runtime/tutor/tutor.??.utf-8 \
-		runtime/tutor/tutor.??.euc \
-		runtime/tutor/tutor.??.sjis \
-		runtime/tutor/tutor.??.iso9 \
-		runtime/tutor/tutor.??.big5 \
-		runtime/tutor/tutor.??.cp1250 \
-		runtime/tutor/tutor.??.cp1251 \
-		runtime/tutor/tutor.??.cp737 \
-		runtime/tutor/tutor.??_??.utf-8 \
-		runtime/tutor/tutor.bar \
-		runtime/tutor/tutor.bar.utf-8 \
-		runtime/spell/README.txt \
-		runtime/spell/??/*.diff \
-		runtime/spell/??/main.aap \
-		runtime/spell/tet/*.diff \
-		runtime/spell/tet/main.aap \
-		runtime/spell/check/main.aap \
-		runtime/spell/check/*.aff \
-		runtime/spell/check/*.dic \
-		runtime/spell/yi/README.txt \
-		runtime/spell/main.aap \
-		runtime/spell/*.vim \
-
 # generic language files, binary
 LANG_GEN_BIN = \
 		runtime/spell/README_en.txt \
@@ -420,23 +377,5 @@ LANG_GEN_BIN = \
 		runtime/spell/en.ascii.sug \
 		runtime/spell/en.latin1.sug \
 		runtime/spell/en.utf-8.sug \
-
-# all files for lang archive
-LANG_SRC = \
-		src/po/README.txt \
-		src/po/README_mingw.txt \
-		src/po/README_mvc.txt \
-		src/po/check.vim \
-		src/po/cleanup.vim \
-		src/po/Makefile \
-		src/po/Make_cyg.mak \
-		src/po/Make_ming.mak \
-		src/po/Make_mvc.mak \
-		src/po/sjiscorr.c \
-		src/po/*.po \
-
-# the language files for the Win32 lang archive
-LANG_DOS = \
-		src/po/*.mo \
 
 # vim: set ft=make:
