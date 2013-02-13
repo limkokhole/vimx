@@ -14,7 +14,6 @@ VIMEXE = vim
 include ../../src/auto/config.mk
 
 DOCS = \
-	arabic.txt \
 	autocmd.txt \
 	change.txt \
 	cmdline.txt \
@@ -25,24 +24,18 @@ DOCS = \
 	digraph.txt \
 	editing.txt \
 	eval.txt \
-	farsi.txt \
 	filetype.txt \
 	fold.txt \
 	ft_ada.txt \
 	ft_sql.txt \
 	gui.txt \
-	gui_w16.txt \
-	gui_w32.txt \
 	gui_x11.txt \
-	hangulin.txt \
-	hebrew.txt \
 	help.txt \
 	helphelp.txt \
 	howto.txt \
 	if_cscop.txt \
 	if_lua.txt \
 	if_mzsch.txt \
-	if_ole.txt \
 	if_perl.txt \
 	if_pyth.txt \
 	if_ruby.txt \
@@ -59,19 +52,7 @@ DOCS = \
 	motion.txt \
 	netbeans.txt \
 	options.txt \
-	os_390.txt \
-	os_amiga.txt \
-	os_beos.txt \
-	os_dos.txt \
-	os_mac.txt \
-	os_mint.txt \
-	os_msdos.txt \
-	os_os2.txt \
-	os_qnx.txt \
-	os_risc.txt \
 	os_unix.txt \
-	os_vms.txt \
-	os_win32.txt \
 	pattern.txt \
 	pi_getscript.txt \
 	pi_gzip.txt \
@@ -89,7 +70,6 @@ DOCS = \
 	remote.txt \
 	repeat.txt \
 	rileft.txt \
-	russian.txt \
 	scroll.txt \
 	sign.txt \
 	spell.txt \
@@ -143,11 +123,9 @@ DOCS = \
 	version7.txt \
 	vi_diff.txt \
 	visual.txt \
-	windows.txt \
 	workshop.txt
 
 HTMLS = \
-	arabic.html \
 	autocmd.html \
 	change.html \
 	cmdline.html \
@@ -158,17 +136,12 @@ HTMLS = \
 	digraph.html \
 	editing.html \
 	eval.html \
-	farsi.html \
 	filetype.html \
 	fold.html \
 	ft_ada.html \
 	ft_sql.html \
 	gui.html \
-	gui_w16.html \
-	gui_w32.html \
 	gui_x11.html \
-	hangulin.html \
-	hebrew.html \
 	helphelp.html \
 	howto.html \
 	if_cscop.html \
@@ -191,19 +164,8 @@ HTMLS = \
 	motion.html \
 	netbeans.html \
 	options.html \
-	os_390.html \
-	os_amiga.html \
-	os_beos.html \
-	os_dos.html \
-	os_mac.html \
-	os_mint.html \
-	os_msdos.html \
-	os_os2.html \
-	os_qnx.html \
-	os_risc.html \
 	os_unix.html \
 	os_vms.html \
-	os_win32.html \
 	pattern.html \
 	pi_getscript.html \
 	pi_gzip.html \
@@ -221,7 +183,6 @@ HTMLS = \
 	remote.html \
 	repeat.html \
 	rileft.html \
-	russian.html \
 	scroll.html \
 	sign.html \
 	spell.html \
@@ -277,7 +238,6 @@ HTMLS = \
 	vi_diff.html \
 	vimindex.html \
 	visual.html \
-	windows.html \
 	workshop.html
 
 .SUFFIXES:
@@ -310,10 +270,6 @@ vimdiff.man: vimdiff.1
 xxd.man: xxd.1
 	nroff -man xxd.1 | sed -e s/.//g > xxd.man
 
-uganda.nsis.txt: uganda.txt
-	sed -e 's/[ 	]*\*[-a-zA-Z0-9.]*\*//g' -e 's/vim:tw=78://' \
-		uganda.txt | uniq >uganda.nsis.txt
-
 # Awk version of .txt to .html conversion.
 html: noerrors tags $(HTMLS)
 	@if test -f errors.log; then more errors.log; fi
@@ -345,109 +301,3 @@ perlhtml: tags $(DOCS)
 
 clean:
 	-rm doctags *.html tags.ref
-
-# These files are in the extra archive, skip if not present
-
-arabic.txt:
-	touch arabic.txt
-
-farsi.txt:
-	touch farsi.txt
-
-hebrew.txt:
-	touch hebrew.txt
-
-russian.txt:
-	touch russian.txt
-
-gui_w16.txt:
-	touch gui_w16.txt
-
-gui_w32.txt:
-	touch gui_w32.txt
-
-if_ole.txt:
-	touch if_ole.txt
-
-os_390.txt:
-	touch os_390.txt
-
-os_amiga.txt:
-	touch os_amiga.txt
-
-os_beos.txt:
-	touch os_beos.txt
-
-os_dos.txt:
-	touch os_dos.txt
-
-os_mac.txt:
-	touch os_mac.txt
-
-os_mint.txt:
-	touch os_mint.txt
-
-os_msdos.txt:
-	touch os_msdos.txt
-
-os_os2.txt:
-	touch os_os2.txt
-
-os_qnx.txt:
-	touch os_qnx.txt
-
-os_risc.txt:
-	touch os_risc.txt
-
-os_win32.txt:
-	touch os_win32.txt
-
-# Note that $< works with GNU make while $> works for BSD make.
-# Is there a solution that works for both??
-vim-fr.UTF-8.1: vim-fr.1
-	iconv -f latin1 -t utf-8 $< >$@
-
-evim-fr.UTF-8.1: evim-fr.1
-	iconv -f latin1 -t utf-8 $< >$@
-
-vimdiff-fr.UTF-8.1: vimdiff-fr.1
-	iconv -f latin1 -t utf-8 $< >$@
-
-xxd-fr.UTF-8.1: xxd-fr.1
-	iconv -f latin1 -t utf-8 $< >$@
-
-vim-it.UTF-8.1: vim-it.1
-	iconv -f latin1 -t utf-8 $< >$@
-
-evim-it.UTF-8.1: evim-it.1
-	iconv -f latin1 -t utf-8 $< >$@
-
-vimdiff-it.UTF-8.1: vimdiff-it.1
-	iconv -f latin1 -t utf-8 $< >$@
-
-xxd-it.UTF-8.1: xxd-it.1
-	iconv -f latin1 -t utf-8 $< >$@
-
-vim-pl.UTF-8.1: vim-pl.1
-	iconv -f latin2 -t utf-8 $< >$@
-
-evim-pl.UTF-8.1: evim-pl.1
-	iconv -f latin2 -t utf-8 $< >$@
-
-vimdiff-pl.UTF-8.1: vimdiff-pl.1
-	iconv -f latin2 -t utf-8 $< >$@
-
-vimxxd-pl.UTF-8.1: xxd-pl.1
-	iconv -f latin2 -t utf-8 $< >$@
-
-vim-ru.UTF-8.1: vim-ru.1
-	iconv -f KOI8-R -t utf-8 $< >$@
-
-evim-ru.UTF-8.1: evim-ru.1
-	iconv -f KOI8-R -t utf-8 $< >$@
-
-vimdiff-ru.UTF-8.1: vimdiff-ru.1
-	iconv -f KOI8-R -t utf-8 $< >$@
-
-xxd-ru.UTF-8.1: xxd-ru.1
-	iconv -f KOI8-R -t utf-8 $< >$@
