@@ -3,32 +3,10 @@ INSTALL - Installation of Vim on different machines.
 This file contains instructions for compiling Vim. If you already have an
 executable version of Vim, you don't need this.
 
-Contents:
-1. Generic
-2. Unix
-3. OS/2 (with EMX 0.9b)
-4. Atari MiNT
-
-See INSTALLami.txt              for Amiga
 See INSTALLmac.txt              for Macintosh
-See INSTALLpc.txt               for PC (MS-DOS, Windows 95/98/NT/XP)
-See INSTALLvms.txt              for VMS
-See INSTALLx.txt		for cross-compiling on Unix
-See ../README_390.txt           for OS/390 Unix
-See ../runtime/doc/os_beos.txt  for BeBox
+See INSTALLx.txt                for cross-compiling on Unix
 
-
-1. Generic
-==========
-
-If you compile Vim without specifying anything, you will get the default
-behaviour as is documented, which should be fine for most people.
-
-For features that you can't enable/disable in another way, you can edit the
-file "feature.h" to match your preferences.
-
-
-2. Unix
+Unix
 =======
 
 Summary:
@@ -171,73 +149,6 @@ headers and libraries, use:
 	./configure --with-local-dir=/stranger
 And to not search for locally installed headers and libraries at all, use:
 	./configure --without-local-dir
-
-
-3. OS/2
-=======
-
-Summary:
-ren Makefile Makefile.unix
-ren makefile.os2 Makefile
-make
-
-This port of Vim to OS/2 is based on the emx environment together
-with GNU C. The main design goal of emx is to simplify porting Unix
-software to OS/2 and DOS. Because of this, almost all the Unix defines
-etc. already existing in the Vim source code could be reused. Only where
-OS/2 specifics came into play were additional changes necessary. Those
-places can be found by searching for "OS2" and "__EMX__" (I've tried to
-keep emx-specific things separate from generic OS/2 stuff).
-
-Note: This OS/2 port works well for me and an additional OS/2 user on
-      the Vim development team (Karsten Sievert); however, since I
-      haven't had any other feedback from other people, that either
-      means no (OS/2-specific) bugs exist, or no one has yet created
-      a situation in which any bugs are apparent.
-      Report any problems or other comments to paul@wau.mis.ah.nl
-      (email valid up to at least September 1996, after that try
-      paul@wurtel.hobby.nl, paul@murphy.nl, or paulS@toecompst.nl).
-      Textmode/notextmode and binary mode both seem to work well.
-
-Prerequisites:
-- To compile, you need the emx environment (at least rev. 0.9b), GCC,
-  some make utility (GNU make works fine). These are generally
-  available as (ask Archie about them):
-    emxrt.zip     emx runtime package
-    emxdev.zip    emx development system (without compiler)
-  GNU programs compiled for emx, patches and patched sources:
-    gnudev1.zip   GNU development tools compiled for emx (part 1)
-    gnudev2.zip   GNU development tools compiled for emx (part 2)
-    gnumake.zip   GNU make
-- Don't set a TERM environment variable; Vim defaults to os2ansi
-  which is available as a builtin termcap entry. Using other values
-  may give problems! (OS/2 ANSI emulation is quite limited.) If you
-  need to set TERM for other programs, you may consider putting
-  set term=os2ansi in the vimrc file.
-
-Check ../runtime/doc/os_os2.txt for additional info on running Vim.
-
-
-4. Atari MiNT
-=============
-
-[NOTE: this is quite old, it might not work anymore]
-
-To compile Vim for MiNT you may either copy Make_mint.mak to Makefile or use
-the Unix Makefile adapted for the MiNT configuration.
-
-Now proceed as described in the Unix section.
-
-Prerequisites:
-
-You need a curses or termcap library that supports non-alphanumeric
-termcap names. If you don't have any, link with termlib.o.
-
------------------------------------------------------------------------------
-
-The rest of this file is based on the INSTALL file that comes with GNU
-autoconf 2.12. Not everything applies to Vim. Read Makefile too!
-
 
 Basic Installation
 ==================
